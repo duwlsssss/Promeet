@@ -57,9 +57,7 @@ const MarkerManager = ({ markers, routes }) => {
     markers.forEach((markerData) => {
       if (markerData.placeId === MY_LOC_MARKER_ID) return; // 내 위치 마커는 별도 처리
 
-      const position = pathname.endsWith('/summary')
-        ? new window.kakao.maps.LatLng(markerData.position.La, markerData.position.Ma)
-        : new window.kakao.maps.LatLng(markerData.position.Ma, markerData.position.La);
+      const position = new window.kakao.maps.LatLng(markerData.position.Ma, markerData.position.La);
       const imageSrc = CATEGORY_MARKER_IMAGE[markerData.type];
       if (!imageSrc) return;
 
@@ -87,6 +85,7 @@ const MarkerManager = ({ markers, routes }) => {
       // 도착역 (중간역)
       const routeLength = routes[0].route.length;
       const lastStation = routes[0].route[routeLength - 1].station;
+
       routes.forEach((userRoute, index) => {
         // polyline
         const path = userRoute.route.map(
@@ -229,7 +228,7 @@ const MarkerManager = ({ markers, routes }) => {
       myLocationMarkerRef.current?.setMap(null);
       myLocationMarkerRef.current = null;
     };
-  }, [map, markers, routes, clearMarkers, handleBoundsChanged, setActiveMarkerId]);
+  }, [map, markers, pathname, routes, clearMarkers, handleBoundsChanged, setActiveMarkerId]);
 
   // activeMarkerId 변경시 장소 오버레이 처리
   useEffect(() => {

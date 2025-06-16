@@ -39,7 +39,7 @@ export const CreateOnlyWrapper = ({ children }) => {
   const { setUserType } = useUserActions();
 
   useEffect(() => {
-    console.log('CreateOnlyWrapper', isPending, promiseDataFromServer);
+    // console.log('CreateOnlyWrapper', isPending, promiseDataFromServer);
     if (!isPending && promiseDataFromServer) {
       const isCreator = promiseDataFromServer.creatorId === userId;
       if (!isCreator) {

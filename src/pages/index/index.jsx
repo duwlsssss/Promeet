@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button';
 import Navbar from '@/layouts/Navbar';
 import useGetMultiplePromiseData from '@/hooks/queries/useGetMultiplePromiseData';
 import { useUserInfo } from '@/hooks/stores/auth/useUserStore';
-import { ROUTES } from '@/constants/routes';
+import { BUILD_ROUTES, ROUTES } from '@/constants/routes';
 import alarmIcon from '@/assets/img/icon/alarm.svg';
 import Card from '@/components/ui/card';
 import AppointmentCard from '@/components/ui/ddaycard';
@@ -56,7 +56,7 @@ const HomePage = () => {
   const createdPromises = createQueries.map((q) => q.data).filter(Boolean);
   const joinedPromises = joinQueries.map((q) => q.data).filter(Boolean);
 
-  console.log('참여 요청받은 약속', joinIds, '생성한 약속', createIds);
+  // console.log('참여 요청받은 약속', joinIds, '생성한 약속', createIds);
 
   const allPromises = [...createdPromises, ...joinedPromises]; // 생성 + 초대
   const { todayPromises } = classifyPromises(allPromises);
@@ -84,6 +84,11 @@ const HomePage = () => {
   const handleCreatePromiseBtnClick = () => {
     if (!userId) navigate(ROUTES.SIGN_IN);
     else navigate(ROUTES.PROMISE_CREATE_INFO);
+  };
+
+  const handleAppointmentClick = (promiseId) => {
+    console.log(promiseId);
+    navigate(BUILD_ROUTES.PROMISE_SUMMARY(promiseId));
   };
 
   if (!userId)
@@ -130,7 +135,7 @@ const HomePage = () => {
                 </S.EmptyBox>
               ) : (
                 <S.TodayCardScroller
-                  cardIdx={cardIdx}
+                  $cardIdx={cardIdx}
                   onTouchStart={handleDragStart}
                   onTouchEnd={handleDragEnd}
                   onMouseDown={handleDragStart}
@@ -138,9 +143,9 @@ const HomePage = () => {
                 >
                   {todayPromises.map((card, i) => (
                     <S.TodayCard
-                      key={card.id}
+                      key={card.promiseId}
                       style={{ opacity: cardIdx === i ? 1 : 0.6 }}
-                      active={cardIdx === i}
+                      $active={cardIdx === i}
                     >
                       <Card
                         title={card.title}
@@ -190,7 +195,10 @@ const HomePage = () => {
                   return ddayA - ddayB;
                 })
                 .map((promise) => (
-                  <S.Appointment key={promise.id}>
+                  <S.Appointment
+                    key={promise.promiseId}
+                    onClick={() => handleAppointmentClick(promise.promiseId)}
+                  >
                     <div>
                       <small>내가 생성함</small>
                       <h4>{promise.title}</h4>
@@ -236,7 +244,10 @@ const HomePage = () => {
                   return ddayA - ddayB;
                 })
                 .map((promise) => (
-                  <S.Appointment key={promise.id}>
+                  <S.Appointment
+                    key={promise.promiseId}
+                    onClick={() => handleAppointmentClick(promise.promiseId)}
+                  >
                     <div>
                       <small>초대받음</small>
                       <h4>{promise.title}</h4>

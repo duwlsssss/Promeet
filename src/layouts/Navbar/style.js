@@ -30,7 +30,7 @@ export const NavButton = styled.button`
   border: none;
 
   font-size: 24px;
-  color: ${(props) => (props.active ? '#6dbbae' : '#002055')};
+  color: ${(props) => (props.$active ? '#6dbbae' : '#002055')};
 
   background: none;
   outline: none;

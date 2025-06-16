@@ -7,9 +7,6 @@ export const Container = styled.section`
   flex-direction: column;
   align-items: center;
 
-  width: 100vw;
-  min-height: 100vh;
-
   background: #ffffff;
 `;
 
@@ -21,9 +18,6 @@ export const Frame = styled.div`
   align-items: stretch;
 
   width: 100%;
-  max-width: 430px;
-  min-height: 100vh;
-  margin: 0 auto;
   padding-bottom: 90px; /* 네비바에 가리지 않도록 하단 여백 추가 */
 
   background: #ffffff;

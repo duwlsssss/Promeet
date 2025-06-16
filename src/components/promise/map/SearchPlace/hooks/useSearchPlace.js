@@ -27,9 +27,9 @@ const getDescText = (userType, btnDisabled, isFinalizePending) => {
   return descTexts[userType][btnDisabled];
 };
 
-const getBtnText = (userType) => {
+const getBtnText = (userType, selectedPlace) => {
   const btnTexts = {
-    create: '이 장소를 선택',
+    create: selectedPlace?.placeId ? '이 장소를 선택' : '장소 카드를 선택해주세요',
     join: '약속 정보 보기',
   };
   return btnTexts[userType];
@@ -154,17 +154,21 @@ const useSearchPlace = (category) => {
   const isInvitedMember = promises.join.includes(promiseId);
   const userType = isInvitedMember ? 'join' : 'create';
 
+  // 모든 멤버가 좋아요를 눌렀는지 확인
+  const allMembersLiked = useMemo(() => {
+    if (members.length !== memberCnt) return false;
+    return memberCnt - 1 === members.filter((m) => m.hasLikedPlace).length;
+  }, [members, memberCnt]);
+
   // 버튼 비활성화 조건
   const btnDisabled = useMemo(() => {
     if (userType === 'create') {
-      // 생성자는 좋아요를 누른 멤버 수가 전체 멤버 수보다 1명 적을 때까지 버튼 비활성화
-      return memberCnt - 1 > likedPlaces.length;
+      // 생성자는 모든 멤버가 좋아요를 눌렀을 때만 버튼 활성화
+      return !selectedPlace || !allMembersLiked;
     }
     // 참여자는 자신이 좋아요를 눌렀을 때만 버튼 활성화
-    else if (userType === 'join') {
-      return !likedPlaces?.some((place) => place.userIds.includes(userId));
-    }
-  }, [userType, memberCnt, likedPlaces, userId]);
+    return !likedPlaces?.some((place) => place.userIds.includes(userId));
+  }, [userType, selectedPlace, allMembersLiked, likedPlaces, userId]);
 
   // Places 서비스 초기화
   const ps = useMemo(() => {
@@ -246,8 +250,8 @@ const useSearchPlace = (category) => {
       name: likedPlace.place.name,
       address: likedPlace.place.address,
       position: new window.kakao.maps.LatLng(
-        likedPlace.place.position.La,
         likedPlace.place.position.Ma,
+        likedPlace.place.position.La,
       ),
       isLiked: likedPlace.userIds.includes(userId),
       likesCount: likedPlace.likesCount,
@@ -282,7 +286,7 @@ const useSearchPlace = (category) => {
 
   return {
     descText: getDescText(userType, btnDisabled, isFinalizePending),
-    btnText: getBtnText(userType),
+    btnText: getBtnText(userType, selectedPlace),
     btnDisabled,
     places,
     routes,

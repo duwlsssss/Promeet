@@ -15,13 +15,13 @@ const Navbar = () => {
 
   return (
     <BottomBar>
-      <NavButton active={location.pathname === ROUTES.HOME} onClick={() => navigate(ROUTES.HOME)}>
+      <NavButton $active={location.pathname === ROUTES.HOME} onClick={() => navigate(ROUTES.HOME)}>
         <Home />
       </NavButton>
 
       <AddButton onClick={() => navigate(ROUTES.PROMISE_CREATE_INFO)}>+</AddButton>
 
-      <NavButton active={location.pathname === ROUTES.USER} onClick={() => navigate(ROUTES.USER)}>
+      <NavButton $active={location.pathname === ROUTES.USER} onClick={() => navigate(ROUTES.USER)}>
         <User />
       </NavButton>
     </BottomBar>
