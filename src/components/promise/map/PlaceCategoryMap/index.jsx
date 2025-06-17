@@ -13,9 +13,10 @@ import LocationAgreementModal from '@/components/modal/LocationAgreementModal';
 
 const PlaceCategoryMap = () => {
   const { selectedValue } = useTabsInfo();
-  const { allowMyLocation, myLocation } = useLocationInfo();
+  const { allowMyLocation } = useLocationInfo();
   const { setMyLocation } = useLocationActions();
   const { promiseDataFromServer } = usePromiseDataFromServerInfo();
+  const { centerStation, canFix } = promiseDataFromServer;
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
   const handleError = useHandleError();
@@ -39,13 +40,14 @@ const PlaceCategoryMap = () => {
     }
   };
 
-  const mapLat = myLocation?.position.Ma ?? DEFAULT_LAT;
-  const mapLng = myLocation?.position.La ?? DEFAULT_LNG;
+  // 중간역을 지도 센터로
+  const mapLat = centerStation ?? DEFAULT_LAT;
+  const mapLng = centerStation ?? DEFAULT_LNG;
 
   return (
     <>
       <MapContainer lat={mapLat} lng={mapLng}>
-        <SearchPlace category={selectedValue} canFix={promiseDataFromServer.canFix} />
+        <SearchPlace category={selectedValue} canFix={canFix} />
       </MapContainer>
       <S.TabsWrapper>
         <Tabs defaultValue={CATEGORY.RESTAURANT} option="장소 카테고리 탭">

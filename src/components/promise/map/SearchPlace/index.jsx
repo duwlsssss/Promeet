@@ -15,7 +15,6 @@ const SearchPlace = ({ category }) => {
     btnText,
     btnDisabled,
     places,
-    // routes,
     myLocation,
     isLoading,
     isLikeList,

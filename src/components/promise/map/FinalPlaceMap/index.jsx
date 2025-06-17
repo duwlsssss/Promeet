@@ -5,8 +5,10 @@ import { CATEGORY } from '@/constants/place';
 
 // 최종 약속 위치 표시하는 맵
 const FinalPlaceMap = ({ place }) => {
+  const lat = Number(place.position.Ma);
+  const lng = Number(place.position.La);
   return (
-    <MapContainer lat={Number(place.position.Ma)} lng={Number(place.position.La)}>
+    <MapContainer lat={lat} lng={lng}>
       <MarkerManager markers={[place]} />
     </MapContainer>
   );
@@ -26,10 +28,6 @@ FinalPlaceMap.propTypes = {
     link: PropTypes.string,
   }).isRequired,
   isSummaryPage: PropTypes.bool,
-};
-
-FinalPlaceMap.defaultProps = {
-  isSummaryPage: false,
 };
 
 export default FinalPlaceMap;

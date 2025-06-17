@@ -32,7 +32,7 @@ const PlaceCard = ({
     <S.PlaceCard
       $isSelected={isSelected}
       animate={{
-        backgroundColor: isRetrieved ? '#40B59F50' : 'white',
+        backgroundColor: isRetrieved ? 'rgba(64, 181, 159, 0.31)' : 'rgba(255, 255, 255, 1)',
       }}
       transition={{ duration: 1.5 }}
     >

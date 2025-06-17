@@ -13,8 +13,8 @@ const MarkerManager = ({ markers, routes }) => {
   const isSummaryPage = pathname.endsWith('/summary');
 
   const { map } = useMapInfo();
-  const { activeMarkerId } = useMarkerInfo();
-  const { setActiveMarkerId, setSelectedOverlayId } = useMarkerActions();
+  const { activeMarkerId } = useMarkerInfo(); // 장소 오버레이 표시 위해 저장
+  const { setActiveMarkerId, setSelectedOverlayId } = useMarkerActions(); // selectedOverlayId는 바텀 시트 열고 잠시 포커스 주는 역할
   const { setActiveBottomSheet } = useBottomSheetActions();
 
   // 마커 관리 refs
@@ -23,7 +23,7 @@ const MarkerManager = ({ markers, routes }) => {
   const currentPlaceOverlayRef = useRef(null); // 모든 오버레이
   const myLocationMarkerRef = useRef(null); // 내 위치 마커는 변했을때만 바꾸기 위해 ref로 관리
 
-  //  마커/polyline 정리 함수
+  //  마커/polyline 정리 함수 ( 내 위치 마커 제외 )
   const clearMarkers = useCallback(() => {
     markersRef.current.forEach((marker) => marker?.setMap(null));
     markersRef.current = [];
@@ -105,7 +105,6 @@ const MarkerManager = ({ markers, routes }) => {
 
         // 사용자 정보 오버레이
         const firstStation = userRoute.route[0].station;
-        // const totalDuration = userRoute.time;
         const totalDuration = userRoute.route.reduce((acc, r) => acc + r.duration, 0);
 
         const userOverlay = new window.kakao.maps.CustomOverlay({

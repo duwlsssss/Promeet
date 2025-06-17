@@ -5,7 +5,6 @@ export const useMapInfo = () =>
   mapStore(
     useShallow((state) => ({
       map: state.map,
-      isKakaoLoaded: state.isKakaoLoaded,
     })),
   );
 

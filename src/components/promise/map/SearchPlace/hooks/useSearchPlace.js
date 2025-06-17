@@ -1,6 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useMapInfo } from '@/hooks/stores/promise/map/useMapStore';
 import { useUserInfo } from '@/hooks/stores/auth/useUserStore';
 import { useLocationInfo } from '@/hooks/stores/promise/useLocationStore';
 import { usePromiseDataInfo } from '@/hooks/stores/promise/usePromiseDataStore';
@@ -13,10 +12,12 @@ import useGetUserData from '@/hooks/queries/useGetUserData';
 import useFinalizePromise from '@/hooks/mutations/useFinalizePromise';
 import { BUILD_ROUTES } from '@/constants/routes';
 
-const getDescText = (userType, btnDisabled, isFinalizePending) => {
+const getDescText = (userType, btnDisabled, hasSelectedPlace, isFinalizePending) => {
   const descTexts = {
     create: {
-      true: '모든 사용자가 좋아요를 입력해야해요',
+      true: hasSelectedPlace
+        ? '최종 약속 장소를 선택해주세요'
+        : '모든 사용자가 좋아요를 입력해야해요',
       false: isFinalizePending ? '약속 확정 중' : '약속 장소를 선택해주세요',
     },
     join: {
@@ -35,109 +36,10 @@ const getBtnText = (userType, selectedPlace) => {
   return btnTexts[userType];
 };
 
-/**
- * 역 이름으로 역 정보 검색
- * @param {Object} ps - 카카오맵 Places 서비스
- * @param {string} stationName - 역 이름
- * @returns {Promise<Object>} 역 정보
- */
-const getStationInfo = (ps, stationName) => {
-  return new Promise((resolve, reject) => {
-    ps.keywordSearch(stationName, (data, status) => {
-      if (status === window.kakao.maps.services.Status.OK) {
-        // 정확한 역 이름과 일치하는 역 찾기
-        const station = data.find((s) => s.place_name === stationName);
-        if (station) {
-          resolve({
-            name: station.place_name,
-            position: {
-              lat: parseFloat(station.y),
-              lng: parseFloat(station.x),
-            },
-          });
-        } else {
-          resolve(null);
-        }
-      } else {
-        reject(new Error('역 정보 검색 실패'));
-      }
-    });
-  });
-};
-
-/**
- * midpoint 데이터를 routes 구조로 변환
- * @param {Object} ps - 카카오맵 Places 서비스
- * @param {Object} midpoint - 중간지점 데이터
- * @param {Object} members - 멤버 정보
- * @returns {Promise<Array>} routes - 변환된 경로 배열
- */
-const convertMidpointToRoutes = async (ps, midpoint, members) => {
-  if (!midpoint?.results || !midpoint?.byTotal?.station) return [];
-
-  // 모든 역 정보를 한번에 가져오기
-  const stationNames = new Set();
-  midpoint.results.forEach((result) => {
-    const path = result.getPath(midpoint.byTotal.station);
-    path.forEach((stationName) => stationNames.add(stationName));
-  });
-
-  // 역 정보 매핑
-  const stationInfoMap = new Map();
-  await Promise.all(
-    Array.from(stationNames).map(async (stationName) => {
-      try {
-        const stationInfo = await getStationInfo(ps, stationName);
-        if (stationInfo) {
-          stationInfoMap.set(stationName, stationInfo);
-        }
-      } catch (error) {
-        console.error('역 정보 검색 실패:', error);
-      }
-    }),
-  );
-
-  return midpoint.results.map((result) => {
-    const path = result.getPath(midpoint.byTotal.station);
-    // 모든 역까지의 시간 합산
-    const totalTime = Object.values(result.times).reduce((sum, time) => sum + time, 0);
-
-    const route = path.map((stationName, index) => {
-      const isMidpoint = stationName === midpoint.byTotal.station;
-      const stationInfo = stationInfoMap.get(stationName);
-
-      return {
-        station: {
-          order: index + 1,
-          type: isMidpoint ? 'midpoint' : 'normal',
-          name: stationName,
-          position: stationInfo
-            ? {
-                La: stationInfo.position.lat,
-                Ma: stationInfo.position.lng,
-              }
-            : { La: 0, Ma: 0 },
-        },
-      };
-    });
-
-    const name = members.find((m) => m.userId === result.userId);
-
-    return {
-      name,
-      userId: result.userId,
-      time: totalTime,
-      route,
-    };
-  });
-};
-
 const useSearchPlace = (category) => {
-  const { isKakaoLoaded } = useMapInfo();
   const { myLocation } = useLocationInfo();
   const [nearbyPlaces, setNearbyPlaces] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [routes, setRoutes] = useState([]);
   const { selectedTab } = usePlaceLikeToggleInfo();
   const isLikeList = selectedTab === 'like';
   const navigate = useNavigate();
@@ -145,7 +47,7 @@ const useSearchPlace = (category) => {
   const { userId, promises } = useUserInfo();
   const { selectedPlace } = usePromiseDataInfo();
   const { promiseDataFromServer } = usePromiseDataFromServerInfo();
-  const { likedPlaces, midpoint, members, memberCnt } = promiseDataFromServer;
+  const { centerStation, likedPlaces, members, memberCnt } = promiseDataFromServer;
   const { mutate: finalizePromise, isPending: isFinalizePending } = useFinalizePromise();
 
   const { promiseId } = useParams();
@@ -172,9 +74,8 @@ const useSearchPlace = (category) => {
 
   // Places 서비스 초기화
   const ps = useMemo(() => {
-    if (!isKakaoLoaded) return null;
     return new window.kakao.maps.services.Places();
-  }, [isKakaoLoaded]);
+  }, []);
 
   // 검색 결과 처리
   const handleSearchResults = useCallback(
@@ -210,19 +111,9 @@ const useSearchPlace = (category) => {
     setNearbyPlaces([]);
 
     // 실제로는 중간역 사용 해야함
-    const keyword = DEFAULT_SUBWAY_STATION + CATEGORY_LABEL[category];
+    const keyword = (centerStation ?? DEFAULT_SUBWAY_STATION) + CATEGORY_LABEL[category];
     ps.keywordSearch(keyword, handleSearchResults);
-  }, [category, ps, handleSearchResults]);
-
-  // routes 업데이트
-  useEffect(() => {
-    if (!ps || !midpoint || !members) return;
-    const updateRoutes = async () => {
-      const newRoutes = await convertMidpointToRoutes(ps, midpoint, members);
-      setRoutes(newRoutes);
-    };
-    updateRoutes();
-  }, [ps, midpoint, members]);
+  }, [category, centerStation, ps, handleSearchResults]);
 
   // 주변 장소에 좋아요 정보 추가
   const mergedNearbyPlaces = useMemo(() => {
@@ -285,11 +176,10 @@ const useSearchPlace = (category) => {
   };
 
   return {
-    descText: getDescText(userType, btnDisabled, isFinalizePending),
+    descText: getDescText(userType, btnDisabled, !!selectedPlace, isFinalizePending),
     btnText: getBtnText(userType, selectedPlace),
     btnDisabled,
     places,
-    routes,
     myLocation,
     isLoading,
     isLikeList,
