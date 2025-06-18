@@ -7,6 +7,16 @@ import prettier from 'eslint-plugin-prettier';
 
 export default [
   { ignores: ['dist'] },
+  // Node 환경 파일
+  {
+    files: ['*.config.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      globals: globals.node,
+      sourceType: 'module',
+    },
+  },
+  // 브라우저 + React 환경
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
@@ -37,7 +47,10 @@ export default [
       eqeqeq: 'error',
       'dot-notation': ['error', { allowPattern: '^[a-z]+(_[a-z]+)+$' }],
       'no-var': 'error',
-      'no-unused-vars': 'error',
+      'no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
     },
   },
 ];

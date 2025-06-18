@@ -1,0 +1,96 @@
+/* Pretendard Thin */
+@font-face {
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: 100;
+  src:
+    url('/assets/font/woff2/Pretendard-Thin.woff2') format('woff2'),
+    url('/assets/font/woff/Pretendard-Thin.woff') format('woff');
+}
+
+/* Pretendard ExtraLight */
+@font-face {
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: 200;
+  src:
+    url('/assets/font/woff2/Pretendard-ExtraLight.woff2') format('woff2'),
+    url('/assets/font/woff/Pretendard-ExtraLight.woff') format('woff');
+}
+
+/* Pretendard Light */
+@font-face {
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: 300;
+  src:
+    url('/assets/font/woff2/Pretendard-Light.woff2') format('woff2'),
+    url('/assets/font/woff/Pretendard-Light.woff') format('woff');
+}
+
+/* Pretendard Regular */
+@font-face {
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: 400;
+  src:
+    url('/assets/font/woff2/Pretendard-Regular.woff2') format('woff2'),
+    url('/assets/font/woff/Pretendard-Regular.woff') format('woff');
+}
+
+/* Pretendard Medium */
+@font-face {
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: 500;
+  src:
+    url('/assets/font/woff2/Pretendard-Medium.woff2') format('woff2'),
+    url('/assets/font/woff/Pretendard-Medium.woff') format('woff');
+}
+
+/* Pretendard SemiBold */
+@font-face {
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: 600;
+  src:
+    url('/assets/font/woff2/Pretendard-SemiBold.woff2') format('woff2'),
+    url('/assets/font/woff/Pretendard-SemiBold.woff') format('woff');
+}
+
+/* Pretendard Bold */
+@font-face {
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: 700;
+  src:
+    url('/assets/font/woff2/Pretendard-Bold.woff2') format('woff2'),
+    url('/assets/font/woff/Pretendard-Bold.woff') format('woff');
+}
+
+/* Pretendard ExtraBold */
+@font-face {
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: 800;
+  src:
+    url('/assets/font/woff2/Pretendard-ExtraBold.woff2') format('woff2'),
+    url('/assets/font/woff/Pretendard-ExtraBold.woff') format('woff');
+}
+
+/* Pretendard Black */
+@font-face {
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: 900;
+  src:
+    url('/assets/font/woff2/Pretendard-Black.woff2') format('woff2'),
+    url('/assets/font/woff/Pretendard-Black.woff') format('woff');
+}
+
+/* Jalnan2 */
+@font-face {
+  font-family: Jalnan2;
+  font-style: normal;
+  src: url('/assets/font/otf/Jalnan2.otf') format('opentype');
+}
