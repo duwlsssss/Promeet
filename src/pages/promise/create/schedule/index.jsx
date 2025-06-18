@@ -63,7 +63,7 @@ const SchedulePage = () => {
     });
 
     const pId = res.data.promiseId;
-    const shareLink = `https://promeet-develop.vercel.app/promise/${pId}/join`;
+    const shareLink = `https://promeet-six.vercel.app/promise/${pId}/join`;
     setPromiseId(pId);
     setShareLink(shareLink);
     setIsOpenShareModal(true);
