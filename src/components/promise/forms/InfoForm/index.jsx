@@ -84,7 +84,7 @@ const InfoForm = () => {
       />
 
       <S.BtnWrapper>
-        <Button disabled={Object.keys(errors).length > 0 || isSubmitting}>
+        <Button type="submit" disabled={Object.keys(errors).length > 0 || isSubmitting}>
           {isSubmitting ? '저장 중...' : '다음'}
         </Button>
       </S.BtnWrapper>

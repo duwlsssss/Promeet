@@ -41,12 +41,12 @@ const PlaceCategoryMap = () => {
   };
 
   // 중간역을 지도 센터로
-  const mapLat = centerStation ?? DEFAULT_LAT;
-  const mapLng = centerStation ?? DEFAULT_LNG;
+  const mapLat = centerStation?.position?.Ma ?? DEFAULT_LAT;
+  const mapLng = centerStation?.position?.La ?? DEFAULT_LNG;
 
   return (
     <>
-      <MapContainer lat={mapLat} lng={mapLng}>
+      <MapContainer lat={Number(mapLat)} lng={Number(mapLng)}>
         <SearchPlace category={selectedValue} canFix={canFix} />
       </MapContainer>
       <S.TabsWrapper>

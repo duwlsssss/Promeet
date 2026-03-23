@@ -108,11 +108,6 @@ const SearchLocation = ({ onBack }) => {
     throw error;
   }
 
-  // 카카오 스크립트 준비 안됐으면 로딩 컴포넌트 표시
-  if (!ready) {
-    return <DeferredLoader />;
-  }
-
   return (
     <S.Container>
       <Header
@@ -127,10 +122,14 @@ const SearchLocation = ({ onBack }) => {
         onChange={(e) => setSearchInput(e.target.value)}
         placeholder="주소를 입력해주세요"
       />
-      {hasSearchTerm ? (
+      {!ready ? (
+        <S.LoaderWrapper>
+          <DeferredLoader />
+        </S.LoaderWrapper>
+      ) : hasSearchTerm ? (
         <PlaceCardList
           places={places}
-          isLoading={isLoading}
+          isLoading={isLoading} // 검색 중 로딩
           emptyText={emptyText}
           onCardClick={handleCardClick}
         />

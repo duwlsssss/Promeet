@@ -44,7 +44,32 @@ const promiseDataStore = create()(
             }),
           setNearestSubwayStation: (value) =>
             set((state) => {
-              state.nearestSubwayStation = value;
+              let backendId = value.name;
+
+              if (value.name) {
+                // "역"이라는 글자를 먼저 제거하고 공백을 기준으로 나눔
+                const cleanName = value.name.replace(/역/g, '').trim();
+                const parts = cleanName.split(' ');
+
+                if (parts.length >= 2) {
+                  const name = parts[0]; // "신림" 또는 "서울대벤처타운"
+
+                  // 뒤에 붙은 "호선" 또는 "선"을 제거합니다.
+                  // "2호선" -> "2", "신림선" -> "신림", "경의중앙선" -> "경의중앙"
+                  const line = parts[1].replace(/(호선|선)$/, '');
+
+                  backendId = `${name}_${line}`; // "신림_2", "서울대벤처타운_신림"
+
+                  // 상태 업데이트
+                  state.nearestSubwayStation = {
+                    ...value,
+                    originName: value.name,
+                    name: name,
+                    line: line,
+                    id: backendId,
+                  };
+                }
+              }
             }),
           // 생성자가 선택하는 약속 장소
           setSelectedPlace: (place) =>

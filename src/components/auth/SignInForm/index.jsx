@@ -65,6 +65,7 @@ const SignInForm = () => {
         />
         <Button
           color="main"
+          type="submit"
           disabled={isSubmitting || Object.keys(errors).length > 0 || isSignInPending}
         >
           {isSignInPending ? '로그인 중...' : '로그인하기'}

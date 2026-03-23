@@ -23,7 +23,10 @@ const LocationPage = () => {
 
   const { nearestSubwayStation } = usePromiseDataInfo();
 
-  const openSearch = () => setIsSearchOpen(true);
+  const openSearch = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setIsSearchOpen(true);
+  };
   const closeSearch = () => setIsSearchOpen(false);
 
   const handleNextBtn = () => {
@@ -40,7 +43,7 @@ const LocationPage = () => {
         onClick={openSearch}
         readOnly
         style={{ cursor: 'pointer' }}
-        value={nearestSubwayStation?.name ?? ''}
+        value={nearestSubwayStation?.originName ?? ''}
       />
 
       <AnimatePresence>

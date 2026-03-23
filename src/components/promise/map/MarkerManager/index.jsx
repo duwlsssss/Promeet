@@ -81,7 +81,7 @@ const MarkerManager = ({ markers, routes }) => {
     });
 
     // 2. 경로 마커 생성
-    if (routes) {
+    if (routes && routes.length > 0) {
       // 도착역 (중간역)
       const routeLength = routes[0].route.length;
       const lastStation = routes[0].route[routeLength - 1].station;
@@ -98,6 +98,8 @@ const MarkerManager = ({ markers, routes }) => {
           strokeWeight: 5,
           strokeColor: ROUTE_COLORS[index % ROUTE_COLORS.length],
           strokeOpacity: 0.7,
+          lineCap: 'round',
+          lineJoin: 'round',
           map,
         });
         polyline.setMap(map);
@@ -105,15 +107,13 @@ const MarkerManager = ({ markers, routes }) => {
 
         // 사용자 정보 오버레이
         const firstStation = userRoute.route[0].station;
-        const totalDuration = userRoute.route.reduce((acc, r) => acc + r.duration, 0);
+        const totalDuration = userRoute.route.reduce((acc, curr) => acc + curr.duration, 0);
 
         const userOverlay = new window.kakao.maps.CustomOverlay({
           content: `
             <div class="userInfoOverlay">
               <div class="durationContainer">
-                <div class="bold">${firstStation.name}</div> 
-                에서
-                <div class="bold"> ${totalDuration}분</div>
+                <div class="bold">${firstStation.name}에서 ${totalDuration}분</div>
               </div>
               <div class="userName">${userRoute.name}</div>
             </div>
@@ -128,44 +128,56 @@ const MarkerManager = ({ markers, routes }) => {
         userOverlay.setMap(map);
         markersRef.current.push(userOverlay);
 
-        // 도착역 (중간역)
-        const stationPosition = new window.kakao.maps.LatLng(
-          lastStation.position.Ma,
-          lastStation.position.La,
-        );
-
-        // 마커
-        const stationImageSize = new window.kakao.maps.Size(20, 20);
-        const stationImageOption = { offset: new window.kakao.maps.Point(8, 12) };
-
-        const stationMarkerImage = new window.kakao.maps.MarkerImage(
-          STATION_MARKER_IMAGE,
-          stationImageSize,
-          stationImageOption,
-        );
-
-        const stationMarker = new window.kakao.maps.Marker({
-          position: stationPosition,
-          image: stationMarkerImage,
-          map,
+        // 환승역에 작은 표시 남기기
+        userRoute.route.forEach((r) => {
+          if (r.station.isTransfer) {
+            const transferMarker = new window.kakao.maps.CustomOverlay({
+              content: `<div className="transferStation"></div>`,
+              position: new window.kakao.maps.LatLng(r.station.position.Ma, r.station.position.La),
+              map,
+            });
+            markersRef.current.push(transferMarker);
+          }
         });
-        stationMarker.setMap(map);
-        markersRef.current.push(stationMarker);
+      });
 
-        // 오버레이
-        const stationOverlay = new window.kakao.maps.CustomOverlay({
-          content: `
+      // 도착역 (중간역)
+      const stationPosition = new window.kakao.maps.LatLng(
+        lastStation.position.Ma,
+        lastStation.position.La,
+      );
+
+      // 마커
+      const stationImageSize = new window.kakao.maps.Size(20, 20);
+      const stationImageOption = { offset: new window.kakao.maps.Point(8, 12) };
+
+      const stationMarkerImage = new window.kakao.maps.MarkerImage(
+        STATION_MARKER_IMAGE,
+        stationImageSize,
+        stationImageOption,
+      );
+
+      const stationMarker = new window.kakao.maps.Marker({
+        position: stationPosition,
+        image: stationMarkerImage,
+        map,
+      });
+      stationMarker.setMap(map);
+      markersRef.current.push(stationMarker);
+
+      // 오버레이
+      const stationOverlay = new window.kakao.maps.CustomOverlay({
+        content: `
             <div class="stationInfoOverlay">
               <div class="stationName">${lastStation.name}</div>
             </div>
           `,
-          position: stationPosition,
-          yAnchor: 1.6,
-          map,
-        });
-        stationOverlay.setMap(map);
-        markersRef.current.push(stationOverlay);
+        position: stationPosition,
+        yAnchor: 1.6,
+        map,
       });
+      stationOverlay.setMap(map);
+      markersRef.current.push(stationOverlay);
     }
 
     // 3. 내 위치 마커 생성

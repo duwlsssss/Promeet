@@ -37,20 +37,30 @@ const getBtnText = (userType, selectedPlace) => {
 };
 
 const useSearchPlace = (category) => {
+  const { promiseId } = useParams();
+  const navigate = useNavigate();
+
   const { myLocation } = useLocationInfo();
   const [nearbyPlaces, setNearbyPlaces] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // 카카오 장소 검색 로딩 상태
+  const [isSearching, setIsSearching] = useState(false);
   const { selectedTab } = usePlaceLikeToggleInfo();
   const isLikeList = selectedTab === 'like';
-  const navigate = useNavigate();
 
   const { userId, promises } = useUserInfo();
   const { selectedPlace } = usePromiseDataInfo();
   const { promiseDataFromServer } = usePromiseDataFromServerInfo();
-  const { centerStation, likedPlaces, members, memberCnt } = promiseDataFromServer;
   const { mutate: finalizePromise, isPending: isFinalizePending } = useFinalizePromise();
 
-  const { promiseId } = useParams();
+  // 서버 데이터 구조 분해 할당 (기본값 설정으로 에러 방지)
+  const {
+    centerStation = DEFAULT_SUBWAY_STATION,
+    likedPlaces = [],
+    members = [],
+    memberCnt = 0,
+    routes = [],
+    isAllMembersSubmit,
+  } = promiseDataFromServer ?? {};
 
   const { isPending: isUserDataPending } = useGetUserData(userId);
   const isInvitedMember = promises.join.includes(promiseId);
@@ -92,6 +102,7 @@ const useSearchPlace = (category) => {
           isLiked: false,
           likesCount: 0,
         }));
+
         const sortedPlaces = places.sort((p1, p2) => p2.likesCount - p1.likesCount);
         setNearbyPlaces(sortedPlaces);
       } else if (status === window.kakao.maps.services.Status.ZERO_RESULT) {
@@ -99,25 +110,30 @@ const useSearchPlace = (category) => {
       } else if (status === window.kakao.maps.services.Status.ERROR) {
         throw new Error('장소 검색 중 에러 발생');
       }
-      setIsLoading(false);
+      setIsSearching(false);
     },
     [category],
   );
 
   // 장소 검색
   useEffect(() => {
-    if (!ps) return;
-    setIsLoading(true);
+    if (!ps || isSearching || !centerStation?.name) return;
+
+    setIsSearching(true); // 검색 시작 시 로딩 활성화
     setNearbyPlaces([]);
 
-    // 실제로는 중간역 사용 해야함
-    const keyword = (centerStation ?? DEFAULT_SUBWAY_STATION) + CATEGORY_LABEL[category];
-    ps.keywordSearch(keyword, handleSearchResults);
-  }, [category, centerStation, ps, handleSearchResults]);
+    const keyword = `${centerStation.name} ${CATEGORY_LABEL[category]}`.trim();
+
+    ps.keywordSearch(keyword, handleSearchResults, {
+      location: new window.kakao.maps.LatLng(centerStation.position.Ma, centerStation.position.La),
+      radius: 1000, // 중심점으로부터 1km 반경 내 검색
+      sort: window.kakao.maps.services.SortBy.DISTANCE, // 거리순 정렬
+    });
+  }, [category, centerStation, ps, handleSearchResults, isSearching]);
 
   // 주변 장소에 좋아요 정보 추가
   const mergedNearbyPlaces = useMemo(() => {
-    if (isLoading) return [];
+    if (isSearching) return [];
 
     return nearbyPlaces.map((place) => {
       const likedPlace = likedPlaces.find((p) => p.place.placeId === place.placeId);
@@ -131,7 +147,7 @@ const useSearchPlace = (category) => {
       }
       return place;
     });
-  }, [nearbyPlaces, likedPlaces, userId, isLoading]);
+  }, [nearbyPlaces, likedPlaces, userId, isSearching]);
 
   // 좋아요 장소를 카카오 맵 형식으로 변환
   const mergedLikedPlaces = useMemo(() => {
@@ -151,9 +167,9 @@ const useSearchPlace = (category) => {
 
   // 마커용 장소 목록
   const places = useMemo(() => {
-    if (isLoading) return [];
+    if (isSearching) return [];
     return isLikeList ? mergedLikedPlaces : mergedNearbyPlaces;
-  }, [isLikeList, mergedLikedPlaces, mergedNearbyPlaces, isLoading]);
+  }, [isLikeList, mergedLikedPlaces, mergedNearbyPlaces, isSearching]);
 
   const handleNextBtnClick = () => {
     if (userType === 'create' && selectedPlace) {
@@ -181,8 +197,9 @@ const useSearchPlace = (category) => {
     btnDisabled,
     places,
     myLocation,
-    isLoading,
+    isLoading: isSearching,
     isLikeList,
+    routes: isAllMembersSubmit ? routes : [],
     handleNextBtnClick,
     isUserDataPending,
   };

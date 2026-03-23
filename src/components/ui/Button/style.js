@@ -10,6 +10,7 @@ export const Button = styled.button`
   justify-content: center;
 
   width: 100%;
+  max-width: ${({ $maxWidth }) => $maxWidth};
   height: 60px;
   border: none;
   border-radius: 15px;

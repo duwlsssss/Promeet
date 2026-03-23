@@ -32,3 +32,13 @@ export const CurrLocationButton = styled.button`
 export const LocationIcon = styled(LocationIconSVG)`
   flex-shrink: 0;
 `;
+
+export const LoaderWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 200px;
+  margin-top: 40px;
+`;

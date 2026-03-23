@@ -80,7 +80,7 @@ const AbleTimeTable = ({ days, onChange, fixedSchedules = [] }) => {
         <S.HeaderCell $noTop $noLeft>
           <img src={TimeIcon} alt="시간표" width={14} height={14} />
         </S.HeaderCell>
-        {days.map((item) => {
+        {days.map((item, dayIdx) => {
           const dateObj = new Date(item.date);
           // JS: 0=일, 1=월, ..., 6=토
           // DAYS: 월~일 순서라면, 아래처럼 변환
@@ -92,7 +92,7 @@ const AbleTimeTable = ({ days, onChange, fixedSchedules = [] }) => {
             dateObj.getDate(),
           ).padStart(2, '0')}`;
           return (
-            <S.HeaderCell key={item.date} $noTop>
+            <S.HeaderCell key={`${item.date}-${dayIdx}`} $noTop>
               {dateStr} <br /> {DAYS[dayEng].slice(0, 1)}
             </S.HeaderCell>
           );

@@ -36,7 +36,7 @@ const FormInput = ({ label, id, name, height, control, showError, ...props }) =>
   );
 };
 
-const BasicInput = ({ label, id, height, error, showError, ...props }) => {
+const BasicInput = ({ label, id, name, height, error, showError, ...props }) => {
   return (
     <S.InputWrapper $height={height}>
       {label && <label htmlFor={id}>{label}</label>}
@@ -184,6 +184,7 @@ NumberFormInput.propTypes = {
 BasicInput.propTypes = {
   label: PropTypes.string,
   id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   height: PropTypes.string,
   error: PropTypes.string.isRequired,
   showError: PropTypes.bool,

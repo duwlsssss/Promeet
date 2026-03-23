@@ -28,5 +28,5 @@ export const ROUTE_COLORS = [
 ];
 
 // 위치 동의 안했을때 기본 맵 센터 좌표
-export const DEFAULT_LAT = 37.494705526855;
-export const DEFAULT_LNG = 126.95994559383;
+export const DEFAULT_LAT = 37.49638;
+export const DEFAULT_LNG = 126.9535194;

@@ -11,7 +11,8 @@ import { useState } from 'react';
 const DatePage = () => {
   const navigate = useNavigate();
   const { setAvailableTimes } = usePromiseDataActions();
-  const [selectedRange, setSelectedRange] = useState(null);
+  const today = new Date();
+  const [selectedRange, setSelectedRange] = useState([today, today]);
 
   const handleDateRangeChange = (range) => {
     setSelectedRange(range);
@@ -58,6 +59,7 @@ const DatePage = () => {
       </S.CalendarWrapper>
       <S.BtnWrapper>
         <Button
+          type="submit"
           onClick={handleSaveDates}
           disabled={
             !selectedRange ||

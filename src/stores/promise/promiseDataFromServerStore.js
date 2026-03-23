@@ -6,12 +6,20 @@ import { immer } from 'zustand/middleware/immer';
 const promiseDataFromServerStore = create()(
   devtools(
     immer((set) => ({
-      promiseDataFromServer: null,
+      promiseDataFromServer: {
+        members: [],
+        isAllMembersSubmit: false,
+        title: '',
+        description: '',
+      },
       actions: {
         // 약속 정보 가져와서 저장
         setPromiseDataFromServer: (promiseData) =>
           set((state) => {
-            state.promiseDataFromServer = promiseData;
+            state.promiseDataFromServer = {
+              ...state.promiseDataFromServer,
+              ...promiseData,
+            };
           }),
         // likedPlaces만 업데이트
         setLikedPlaces: (likedPlaces) =>

@@ -145,9 +145,7 @@ const EditScheduleModal = ({ isOpen, schedule, onClose, onUpdate }) => {
             <img src={crossIcon} alt="Close" />
           </S.CloseButton>
           <S.AddScheduleTitle>일정 수정</S.AddScheduleTitle>
-          <S.SubmitButton type="button" onClick={handleSubmit}>
-            저장
-          </S.SubmitButton>
+          <S.SubmitButton onClick={handleSubmit}>저장</S.SubmitButton>
         </S.TopBar>
         <S.Slide>
           <S.ScheduleInput
@@ -160,18 +158,18 @@ const EditScheduleModal = ({ isOpen, schedule, onClose, onUpdate }) => {
           <S.Divider />
           <S.TableSetting>
             <S.DayTimeSelect>
-              <S.DaySelectButton type="button" onClick={() => openModal('day')}>
+              <S.DaySelectButton onClick={() => openModal('day')}>
                 {DAYS[form.day]}
                 <img src={selectIcon} alt="Select Day" />
               </S.DaySelectButton>
               <S.TimeRow>
-                <S.TimeButton type="button" onClick={() => openModal('start')}>
+                <S.TimeButton onClick={() => openModal('start')}>
                   {form.startTime.hour}:{form.startTime.minute}
                   <img src={selectIcon} alt="Select Time" />
                 </S.TimeButton>
               </S.TimeRow>
               <S.TimeRow>
-                <S.TimeButton type="button" onClick={() => openModal('end')}>
+                <S.TimeButton onClick={() => openModal('end')}>
                   {form.endTime.hour === '00' && form.endTime.minute === '00'
                     ? '24:00'
                     : `${form.endTime.hour}:${form.endTime.minute}`}

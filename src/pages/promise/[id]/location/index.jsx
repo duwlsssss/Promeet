@@ -24,10 +24,14 @@ const JoinLocationPage = () => {
 
   const { nearestSubwayStation } = usePromiseDataInfo();
 
-  const openSearch = () => setIsSearchOpen(true);
+  const openSearch = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setIsSearchOpen(true);
+  };
   const closeSearch = () => setIsSearchOpen(false);
 
   const handleNextBtn = () => {
+    console.log(nearestSubwayStation);
     if (nearestSubwayStation.name) {
       navigate(BUILD_ROUTES.PROMISE_SCHEDULE(promiseId));
     }
@@ -42,7 +46,7 @@ const JoinLocationPage = () => {
         onClick={openSearch}
         readOnly
         style={{ cursor: 'pointer' }}
-        value={nearestSubwayStation?.name ?? ''}
+        value={nearestSubwayStation?.originName ?? ''}
       />
 
       <AnimatePresence>

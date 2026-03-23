@@ -98,7 +98,7 @@ const HomePage = () => {
           <S.Logo />
           <S.EnterText>쉽고 빠른 약속 정하기</S.EnterText>
         </S.LogoContainer>
-        <Button color="point1" onClick={handleCreatePromiseBtnClick}>
+        <Button color="point1" maxWidth="400px" onClick={handleCreatePromiseBtnClick}>
           약속 잡으러가기
         </Button>
       </S.EnterContainer>

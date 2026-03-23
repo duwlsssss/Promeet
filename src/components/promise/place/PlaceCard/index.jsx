@@ -65,17 +65,8 @@ const PlaceCard = ({
 
         {showHeart ? (
           <S.CardRight>
-            <S.HeartWrapper
-              onClick={(e) => {
-                e.stopPropagation();
-                handleLikeToggle();
-              }}
-            >
-              {isLiked === undefined ? null : isLiked ? (
-                <S.FilledHeartIcon />
-              ) : (
-                <S.EmptyHeartIcon />
-              )}
+            <S.HeartWrapper onClick={handleLikeToggle}>
+              {isLiked ? <S.FilledHeartIcon /> : <S.EmptyHeartIcon />}
             </S.HeartWrapper>
             <S.heartCnt>{likesCount}</S.heartCnt>
           </S.CardRight>

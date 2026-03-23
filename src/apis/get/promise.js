@@ -21,3 +21,9 @@ export const getPromiseSummaryData = async (promiseId) => {
   const { data } = await axiosInstance.get(`/promises/${promiseId}/summary`);
   return data;
 };
+
+// 루트 가져오기
+export const getRoutes = async (promiseId) => {
+  const { data } = await axiosInstance.get(`/promises/${promiseId}/routes`);
+  return data;
+};

@@ -66,9 +66,11 @@ export default function usePlaceCardHandlers(place, $isRetrieved) {
     setActiveMarkerId(place.placeId);
   };
 
-  const handleLikeToggle = () => {
+  const handleLikeToggle = (e) => {
+    e.stopPropagation();
+
     if (!promiseId) return;
-    toggleLike({ place, promiseId, isLiked });
+    toggleLike({ promiseId, place, isLiked });
   };
 
   const handleClickFixPlaceBtn = () => {
