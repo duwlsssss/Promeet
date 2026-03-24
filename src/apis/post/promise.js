@@ -2,7 +2,7 @@ import axiosInstance from '../axiosInstance';
 
 // 좋아요
 export const postPlaceLike = async (promiseId, place, userId) => {
-  const { data } = await axiosInstance.post(`/likes`, {
+  const { data } = await axiosInstance.post(`/promises/likes`, {
     promiseId,
     place,
     userId,
