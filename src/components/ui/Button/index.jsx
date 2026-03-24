@@ -9,7 +9,6 @@ import { BUTTON_COLORS, BUTTON_TYPES } from '@/constants/ui';
  * @param {string} [maxWidth='100%'] - 최대 너비
  * @param {string} [type='button'] - 버튼 타입
  */
-
 const Button = ({
   color = 'main',
   disabled = false,

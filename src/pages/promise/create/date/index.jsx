@@ -59,7 +59,6 @@ const DatePage = () => {
       </S.CalendarWrapper>
       <S.BtnWrapper>
         <Button
-          type="submit"
           onClick={handleSaveDates}
           disabled={
             !selectedRange ||
