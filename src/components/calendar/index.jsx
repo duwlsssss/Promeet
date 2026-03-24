@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Calendar from 'react-calendar';
 import * as S from './style';
 import 'react-calendar/dist/Calendar.css';
@@ -72,7 +72,7 @@ export default function CalendarRange({ onChange, value }) {
             if (range[0] && range[1]) {
               const start = new Date(range[0].setHours(0, 0, 0, 0));
               const end = new Date(range[1].setHours(0, 0, 0, 0));
-              if (start.getTime() === end.getTime() && dateOnly.getTime() === start.getTime()) {
+              if (start === end && dateOnly.getTime() === start && !dragging) {
                 return 'single-day';
               }
             }

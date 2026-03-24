@@ -31,7 +31,6 @@ const JoinLocationPage = () => {
   const closeSearch = () => setIsSearchOpen(false);
 
   const handleNextBtn = () => {
-    console.log(nearestSubwayStation);
     if (nearestSubwayStation.name) {
       navigate(BUILD_ROUTES.PROMISE_SCHEDULE(promiseId));
     }

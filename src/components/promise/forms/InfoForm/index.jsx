@@ -5,13 +5,17 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { usePromiseDataActions } from '@/hooks/stores/promise/usePromiseDataStore';
+import {
+  usePromiseDataInfo,
+  usePromiseDataActions,
+} from '@/hooks/stores/promise/usePromiseDataStore';
 import { PromiseSchema } from '@/schemas/promise';
 import { ROUTES } from '@/constants/routes';
 import { MEMBER_CNT_MIN, MEMBER_CNT_MAX } from '@/constants/promise';
 
 const InfoForm = () => {
   const navigate = useNavigate();
+  const { name, description, memberCnt } = usePromiseDataInfo();
   const { setName, setDescription, setMemberCnt } = usePromiseDataActions();
 
   const {
@@ -24,9 +28,9 @@ const InfoForm = () => {
     resolver: zodResolver(PromiseSchema),
     mode: 'onChange',
     defaultValues: {
-      name: '',
-      description: '',
-      memberCnt: 2,
+      name: name ?? '',
+      description: description ?? '',
+      memberCnt: memberCnt ?? 2,
     },
   });
 

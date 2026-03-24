@@ -1,5 +1,5 @@
 import * as S from './style';
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import Header from '@/components/promise/Header';
@@ -20,26 +20,65 @@ const JoinSchedulePage = () => {
   const { fixedSchedules } = useUserInfo();
 
   // 폼 제출 위해 가져옴
-  const { nearestSubwayStation } = usePromiseDataInfo();
+  const { nearestSubwayStation, availableTimes: storedTimes } = usePromiseDataInfo();
   const { promiseDataFromServer } = usePromiseDataFromServerInfo();
-  const { setAvailableTimes, resetPromiseData } = usePromiseDataActions();
+  const { setAvailableTimes } = usePromiseDataActions();
+
   const prevAvailableTimesRef = useRef(null);
   const selectedRef = useRef(null);
 
-  const { mutateAsync: joinPromise, isPending: isJoinPending } = useJoinPromise();
+  const { mutate: joinPromise, isPending: isJoinPending } = useJoinPromise();
 
-  // 생성자가 설정한 날짜만 가져오기
+  // 생성자의 데이터 추출
   const creator = promiseDataFromServer?.members.find(
     (member) => member.userId === promiseDataFromServer.creatorId,
   );
 
-  // 날짜만 추출해서 새로운 배열 생성
-  const availableTimes =
-    creator?.availableTimes.map(({ date, day }) => ({
-      date,
-      day,
-      timeRanges: [],
-    })) ?? [];
+  // 생성자가 제안한 원본 날짜/시간 (AbleTimeTable의 기준이 됨)
+  const baseAvailableTimes = useMemo(() => {
+    if (!creator?.availableTimes) return [];
+
+    // 날짜별로 그룹화
+    const grouped = creator.availableTimes.reduce((acc, curr) => {
+      const existing = acc.find((item) => item.date === curr.date);
+      const range = { startTime: curr.startTime, endTime: curr.endTime };
+
+      if (existing) {
+        existing.timeRanges.push(range);
+      } else {
+        acc.push({
+          date: curr.date,
+          day: curr.day,
+          timeRanges: [range],
+        });
+      }
+      return acc;
+    }, []);
+
+    return grouped;
+  }, [creator]);
+
+  // handleTimeTableChange에서 사용할 min/max 계산
+  const { minHour, maxHour } = useMemo(() => {
+    // 생성자가 제안한 시간이 없으면 기본 24시간 (하지만 참여 페이지라면 보통 존재함)
+    if (!baseAvailableTimes.some((d) => d.timeRanges?.length > 0)) {
+      return { minHour: 0, maxHour: 24 };
+    }
+
+    let min = 24;
+    let max = 0;
+    baseAvailableTimes.forEach((day) => {
+      day.timeRanges?.forEach((range) => {
+        const startH = parseInt(range.startTime.split(':')[0]);
+        const [endH, endM] =
+          range.endTime === '24:00' ? [24, 0] : range.endTime.split(':').map(Number);
+        if (startH < min) min = startH;
+        const actualEndH = endM > 0 ? endH + 1 : endH;
+        if (actualEndH > max) max = actualEndH;
+      });
+    });
+    return { minHour: min, maxHour: max };
+  }, [baseAvailableTimes]);
 
   const hasSelectedTime = () => {
     if (!selectedRef.current) return false;
@@ -50,26 +89,12 @@ const JoinSchedulePage = () => {
     );
   };
 
-  const handleJoinPromiseBtnClick = async () => {
-    const newAvailableTimes = availableTimes
-      .map((item, dayIdx) => {
-        const dayArr = Array.from({ length: 24 }, (_, h) =>
-          Array.from({ length: 4 }, (_, q) => selectedRef.current[h][dayIdx][q]),
-        );
-        const ranges = extractTimeRanges(dayArr);
-        return {
-          ...item,
-          timeRanges: ranges.map((r) => ({
-            startTime: r.start,
-            endTime: r.end,
-          })),
-        };
-      })
-      .filter((item) => item.timeRanges.length > 0);
+  const handleJoinPromiseBtnClick = () => {
+    if (!hasSelectedTime()) return;
 
-    // 날짜별 여러 구간을 각각 객체로 변환
+    // 서버 전송용으로 평탄화
     const flatAvailableTimes = [];
-    newAvailableTimes.forEach((item) => {
+    storedTimes.forEach((item) => {
       item.timeRanges.forEach((range) => {
         flatAvailableTimes.push({
           id: uuidv4(),
@@ -87,8 +112,6 @@ const JoinSchedulePage = () => {
       nearestStation: nearestSubwayStation,
       availableTimes: flatAvailableTimes,
     });
-
-    resetPromiseData();
   };
 
   // 시간 인덱스를 "HH:MM" 문자열로 변환
@@ -128,10 +151,24 @@ const JoinSchedulePage = () => {
 
   const handleTimeTableChange = (selected) => {
     selectedRef.current = selected;
-    const newAvailableTimes = availableTimes.map((item, dayIdx) => {
-      const dayArr = Array.from({ length: 24 }, (_, h) =>
-        Array.from({ length: 4 }, (_, q) => selected[h][dayIdx][q]),
-      );
+
+    // baseAvailableTimes(생성자 기준)를 기반으로 참여자의 선택 영역 매핑
+    const newAvailableTimes = baseAvailableTimes.map((item, dayIdx) => {
+      // 서버에 저장할 때는 다시 24시간 전체를 기준으로 복원
+      const dayArr = Array.from({ length: 24 }, (_, h) => {
+        // 현재 시간 h가 화면에 보이는 범위(minHour ~ maxHour) 안에 있는지 확인
+        if (h >= minHour && h < maxHour) {
+          const rowIdx = h - minHour; // 압축된 selected 배열에서의 실제 행 번호
+
+          // selected[rowIdx]가 존재하는지 방어 코드 추가
+          if (selected[rowIdx] && selected[rowIdx][dayIdx]) {
+            return Array.from({ length: 4 }, (_, q) => selected[rowIdx][dayIdx][q]);
+          }
+        }
+        // 범위 밖이거나 데이터가 없으면 선택 안 됨(false) 처리
+        return Array(4).fill(false);
+      });
+
       const ranges = extractTimeRanges(dayArr);
       return {
         ...item,
@@ -161,7 +198,7 @@ const JoinSchedulePage = () => {
       <S.TableScrollWrapper>
         <S.TableInnerWrapper>
           <AbleTimeTable
-            days={availableTimes}
+            days={baseAvailableTimes}
             onChange={handleTimeTableChange}
             fixedSchedules={fixedSchedules}
           />
