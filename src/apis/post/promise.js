@@ -2,7 +2,7 @@ import axiosInstance from '../axiosInstance';
 
 // 좋아요
 export const postPlaceLike = async (promiseId, place, userId) => {
-  const { data } = await axiosInstance.post(`/promises/likes`, {
+  const { data } = await axiosInstance.post(`/promise/likes`, {
     promiseId,
     place,
     userId,
@@ -19,7 +19,7 @@ export const postPromise = async (
   nearestStation,
   availableTimes,
 ) => {
-  const { data } = await axiosInstance.post(`/promises`, {
+  const { data } = await axiosInstance.post(`/promise`, {
     creatorId,
     promiseName,
     promiseDescription,
