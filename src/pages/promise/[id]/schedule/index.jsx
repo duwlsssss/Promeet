@@ -91,6 +91,7 @@ const JoinSchedulePage = () => {
 
   const handleJoinPromiseBtnClick = () => {
     if (!hasSelectedTime()) return;
+    if (!nearestSubwayStation?.id) return;
 
     // 서버 전송용으로 평탄화
     const flatAvailableTimes = [];

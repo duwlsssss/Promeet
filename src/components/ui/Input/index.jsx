@@ -2,7 +2,7 @@ import * as S from './style';
 import PropTypes from 'prop-types';
 import { useController } from 'react-hook-form';
 
-const FormInput = ({ label, id, name, height, control, showError, ...props }) => {
+const FormInput = ({ label, id, name, height, control, $showError, ...props }) => {
   const {
     field: { value, onChange },
     fieldState: { error },
@@ -20,14 +20,14 @@ const FormInput = ({ label, id, name, height, control, showError, ...props }) =>
         name={name}
         value={value}
         onChange={onChange}
-        $hasError={showError && error}
+        $hasError={$showError && error}
         autoComplete="off"
         spellCheck="false"
         aria-invalid={!!error}
         aria-describedby={error ? `${id}-error` : undefined}
         {...props}
       />
-      {showError && error?.message && (
+      {$showError && error?.message && (
         <S.ErrorMessage id={`${id}-error`} role="alert" aria-live="polite">
           {error.message}
         </S.ErrorMessage>
@@ -36,21 +36,21 @@ const FormInput = ({ label, id, name, height, control, showError, ...props }) =>
   );
 };
 
-const BasicInput = ({ label, id, name, height, error, showError, ...props }) => {
+const BasicInput = ({ label, id, name, height, error, $showError, ...props }) => {
   return (
     <S.InputWrapper $height={height}>
       {label && <label htmlFor={id}>{label}</label>}
       <S.Input
         id={id}
         name={name}
-        $hasError={showError && error}
+        $hasError={$showError && error}
         autoComplete="off"
         spellCheck="false"
         aria-invalid={!!error}
         aria-describedby={error ? `${id}-error` : undefined}
         {...props}
       />
-      {showError && error && (
+      {$showError && error && (
         <S.ErrorMessage id={`${id}-error`} role="alert" aria-live="polite">
           {error}
         </S.ErrorMessage>
@@ -136,14 +136,14 @@ const NumberFormInput = ({ label, id, name, height, control, min = 2, max = 10, 
  * @param {boolean} [isNumber=false] - 숫자 입력 필드 여부
  * @param {number} [min=2] - 최소값 (isNumber=true일 때)
  * @param {number} [max=10] - 최대값 (isNumber=true일 때)
- * @param {string} [showError] - 에러 표시 여부 (사용자가 입력 시작했을때만)
+ * @param {boolean} [$showError] - 에러 표시 여부 (사용자가 입력 시작했을때만)
  * @param {string} [error] - 에러 메시지 (useForm=false일 때)
  */
 const Input = ({
   useForm = false,
   height = '100px',
   error,
-  showError,
+  $showError = false,
   isNumber = false,
   min,
   max,
@@ -152,13 +152,13 @@ const Input = ({
   if (useForm) {
     if (isNumber) {
       return (
-        <NumberFormInput height={height} min={min} max={max} showError={showError} {...props} />
+        <NumberFormInput height={height} min={min} max={max} $showError={$showError} {...props} />
       );
     }
-    return <FormInput height={height} showError={showError} {...props} />;
+    return <FormInput height={height} $showError={$showError} {...props} />;
   }
 
-  return <BasicInput error={error} showError={showError} height={height} {...props} />;
+  return <BasicInput error={error} $showError={$showError} height={height} {...props} />;
 };
 
 FormInput.propTypes = {
@@ -167,7 +167,7 @@ FormInput.propTypes = {
   name: PropTypes.string.isRequired,
   height: PropTypes.string,
   control: PropTypes.object.isRequired,
-  showError: PropTypes.bool,
+  $showError: PropTypes.bool,
 };
 
 NumberFormInput.propTypes = {
@@ -178,7 +178,7 @@ NumberFormInput.propTypes = {
   control: PropTypes.object.isRequired,
   min: PropTypes.number,
   max: PropTypes.number,
-  showError: PropTypes.bool,
+  $showError: PropTypes.bool,
 };
 
 BasicInput.propTypes = {
@@ -187,7 +187,7 @@ BasicInput.propTypes = {
   name: PropTypes.string.isRequired,
   height: PropTypes.string,
   error: PropTypes.string.isRequired,
-  showError: PropTypes.bool,
+  $showError: PropTypes.bool,
 };
 
 Input.propTypes = {
@@ -196,7 +196,7 @@ Input.propTypes = {
   useForm: PropTypes.bool,
   height: PropTypes.string,
   error: PropTypes.string,
-  showError: PropTypes.bool,
+  $showError: PropTypes.bool,
   isNumber: PropTypes.bool,
   min: PropTypes.number,
   max: PropTypes.number,

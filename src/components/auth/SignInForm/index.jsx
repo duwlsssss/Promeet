@@ -51,7 +51,7 @@ const SignInForm = () => {
           useForm
           control={control}
           placeholder="이름을 입력해주세요"
-          showError={dirtyFields.name}
+          $showError={!!dirtyFields.name}
         />
         <Input
           type="password"
@@ -61,7 +61,7 @@ const SignInForm = () => {
           useForm
           control={control}
           placeholder="비밀번호를 입력해주세요"
-          showError={dirtyFields.password}
+          $showError={!!dirtyFields.password}
         />
         <Button
           color="main"

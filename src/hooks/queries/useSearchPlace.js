@@ -129,7 +129,7 @@ const useSearchPlace = (category) => {
       radius: 1000, // 중심점으로부터 1km 반경 내 검색
       sort: window.kakao.maps.services.SortBy.DISTANCE, // 거리순 정렬
     });
-  }, [category, centerStation, ps, handleSearchResults, isSearching]);
+  }, [category, centerStation, ps, handleSearchResults]);
 
   // 주변 장소에 좋아요 정보 추가
   const mergedNearbyPlaces = useMemo(() => {

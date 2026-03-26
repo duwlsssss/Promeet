@@ -59,7 +59,7 @@ const InfoForm = () => {
         useForm
         control={control}
         placeholder="약속 이름을 입력해주세요"
-        showError={dirtyFields.name}
+        $showError={!!dirtyFields.name}
       />
       <Input
         type="text"
@@ -70,7 +70,7 @@ const InfoForm = () => {
         useForm
         control={control}
         placeholder="약속 설명을 입력해주세요"
-        showError={dirtyFields.description}
+        $showError={!!dirtyFields.description}
       />
 
       <Input
@@ -84,7 +84,7 @@ const InfoForm = () => {
         control={control}
         min={MEMBER_CNT_MIN}
         max={MEMBER_CNT_MAX}
-        showError={dirtyFields.memberCnt}
+        $showError={!!dirtyFields.memberCnt}
       />
 
       <S.BtnWrapper>

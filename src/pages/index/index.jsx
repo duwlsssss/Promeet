@@ -1,6 +1,6 @@
-import React from 'react';
+import { useEffect, useState, useRef } from 'react';
 import * as S from './style';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
 import DeferredLoader from '@/components/ui/DeferredLoader';
 import Button from '@/components/ui/Button';
@@ -11,6 +11,7 @@ import { BUILD_ROUTES, ROUTES } from '@/constants/routes';
 import alarmIcon from '@/assets/img/icon/alarm.svg';
 import Card from '@/components/ui/card';
 import AppointmentCard from '@/components/ui/ddaycard';
+import toast from '@/utils/toast';
 
 // 오늘, 다가오는 약속 추출
 const classifyPromises = (Promises) => {
@@ -37,11 +38,19 @@ const classifyPromises = (Promises) => {
 };
 
 const HomePage = () => {
-  const [cardIdx, setCardIdx] = React.useState(0);
-  const startX = React.useRef(null);
+  const [cardIdx, setCardIdx] = useState(0);
+  const startX = useRef(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { userId, userName, promises } = useUserInfo();
+
+  // toastMessage 넘어왔으면 표시
+  useEffect(() => {
+    if (location.state?.toastMessage) {
+      toast(location.state.toastMessage);
+    }
+  }, [location.state]);
 
   // 실제 데이터로 대체
   const createIds = promises.create ?? []; // 생성한 약속 ids

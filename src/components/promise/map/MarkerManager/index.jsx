@@ -134,20 +134,14 @@ const MarkerManager = ({ markers, routes }) => {
           content: `
               <div class="userInfoOverlay">
                 ${
-                  groupedByStation.size === 1 // 모두 같은 출발지
+                  userRoutes.length > 1 // 같은 출발지인 사람들
                     ? `
                       <div class="durationContainer">${firstStation.name}</div>
                       <div class="namesContainer">
                         ${userRoutes.map((r) => `<span class="bold">${r.name}</span>`).join(', ')}
-                      </div>`
-                    : userRoutes.length > 1 // 두사람이상 같은 출발지
-                      ? `
-                        <div class="durationContainer">${firstStation.name}에서 ${totalDuration}분</div>
-                        <div class="namesContainer">
-                          ${userRoutes.map((r) => `<span class="bold">${r.name}</span>`).join(', ')}
-                        </div>`
-                      : // 각각 다른 출발지
-                        `
+                      </div>
+                      `
+                    : `
                         <div class="durationContainer">${firstStation.name}에서 ${totalDuration}분</div>
                         <div class="bold">${userRoutes[0].name}</div>
                       `
@@ -158,7 +152,7 @@ const MarkerManager = ({ markers, routes }) => {
             firstStation.position.Ma,
             firstStation.position.La,
           ),
-          yAnchor: 1.05,
+          yAnchor: 1.3,
           map,
         });
         userOverlay.setMap(map);
@@ -189,9 +183,13 @@ const MarkerManager = ({ markers, routes }) => {
       stationMarker.setMap(map);
       markersRef.current.push(stationMarker);
 
+      const isLastStationSameAsStart = [...groupedByStation.keys()].some(
+        (key) => key === `${lastStation.position.Ma},${lastStation.position.La}`,
+      );
+
       // 오버레이
-      if (groupedByStation.size > 1) {
-        //
+      // 출발역이 모두 같진 않고, 도착역-모든 사람의 출발역이 같지 않을때
+      if (groupedByStation.size > 1 && !isLastStationSameAsStart) {
         const stationOverlay = new window.kakao.maps.CustomOverlay({
           content: `
               <div class="stationInfoOverlay">
