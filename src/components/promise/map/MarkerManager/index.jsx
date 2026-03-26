@@ -105,29 +105,6 @@ const MarkerManager = ({ markers, routes }) => {
         polyline.setMap(map);
         markersRef.current.push(polyline);
 
-        // 사용자 정보 오버레이
-        const firstStation = userRoute.route[0].station;
-        const totalDuration = userRoute.route.reduce((acc, curr) => acc + curr.duration, 0);
-
-        const userOverlay = new window.kakao.maps.CustomOverlay({
-          content: `
-            <div class="userInfoOverlay">
-              <div class="durationContainer">
-                <div class="bold">${firstStation.name}에서 ${totalDuration}분</div>
-              </div>
-              <div class="userName">${userRoute.name}</div>
-            </div>
-          `,
-          position: new window.kakao.maps.LatLng(
-            firstStation.position.Ma,
-            firstStation.position.La,
-          ),
-          yAnchor: 1.05,
-          map,
-        });
-        userOverlay.setMap(map);
-        markersRef.current.push(userOverlay);
-
         // 환승역에 작은 표시 남기기
         userRoute.route.forEach((r) => {
           if (r.station.isTransfer) {
@@ -139,6 +116,53 @@ const MarkerManager = ({ markers, routes }) => {
             markersRef.current.push(transferMarker);
           }
         });
+      });
+
+      // 사용자 정보 오버레이
+      // firstStation 기준으로 그룹핑 - 같은 출발역인 사람은 모아서 표시
+      const groupedByStation = Map.groupBy(
+        routes,
+        (r) => `${r.route[0].station.position.Ma},${r.route[0].station.position.La}`,
+      );
+
+      groupedByStation.forEach((userRoutes) => {
+        const firstStation = userRoutes[0].route[0].station;
+        const totalDuration = userRoutes[0].route.reduce((acc, curr) => acc + curr.duration, 0);
+
+        // 하나의 오버레이에 여러 이름 표시
+        const userOverlay = new window.kakao.maps.CustomOverlay({
+          content: `
+              <div class="userInfoOverlay">
+                ${
+                  groupedByStation.size === 1 // 모두 같은 출발지
+                    ? `
+                      <div class="durationContainer">${firstStation.name}</div>
+                      <div class="namesContainer">
+                        ${userRoutes.map((r) => `<span class="bold">${r.name}</span>`).join(', ')}
+                      </div>`
+                    : userRoutes.length > 1 // 두사람이상 같은 출발지
+                      ? `
+                        <div class="durationContainer">${firstStation.name}에서 ${totalDuration}분</div>
+                        <div class="namesContainer">
+                          ${userRoutes.map((r) => `<span class="bold">${r.name}</span>`).join(', ')}
+                        </div>`
+                      : // 각각 다른 출발지
+                        `
+                        <div class="durationContainer">${firstStation.name}에서 ${totalDuration}분</div>
+                        <div class="bold">${userRoutes[0].name}</div>
+                      `
+                }
+              </div>
+            `,
+          position: new window.kakao.maps.LatLng(
+            firstStation.position.Ma,
+            firstStation.position.La,
+          ),
+          yAnchor: 1.05,
+          map,
+        });
+        userOverlay.setMap(map);
+        markersRef.current.push(userOverlay);
       });
 
       // 도착역 (중간역)
@@ -166,18 +190,21 @@ const MarkerManager = ({ markers, routes }) => {
       markersRef.current.push(stationMarker);
 
       // 오버레이
-      const stationOverlay = new window.kakao.maps.CustomOverlay({
-        content: `
-            <div class="stationInfoOverlay">
-              <div class="stationName">${lastStation.name}</div>
-            </div>
-          `,
-        position: stationPosition,
-        yAnchor: 1.6,
-        map,
-      });
-      stationOverlay.setMap(map);
-      markersRef.current.push(stationOverlay);
+      if (groupedByStation.size > 1) {
+        //
+        const stationOverlay = new window.kakao.maps.CustomOverlay({
+          content: `
+              <div class="stationInfoOverlay">
+                <div class="stationName">${lastStation.name}</div>
+              </div>
+            `,
+          position: stationPosition,
+          yAnchor: 1.6,
+          map,
+        });
+        stationOverlay.setMap(map);
+        markersRef.current.push(stationOverlay);
+      }
     }
 
     // 3. 내 위치 마커 생성

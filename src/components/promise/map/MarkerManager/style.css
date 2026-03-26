@@ -60,28 +60,20 @@
 
 /* 경로 */
 .userInfoOverlay {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.userName {
   position: relative; /* 아래 화살표 배치용 */
   display: flex;
-  padding: 5px;
+  flex-direction: column;
+  padding: 5px 5px 10px;
   justify-content: center;
   align-items: center;
   gap: 10px;
-  border-radius: 5px;
+  border-radius: 8px;
   background: #40b59f;
 
   color: #ffffff;
 }
 
-.userName::after {
+.userInfoOverlay::after {
   content: '';
   position: absolute;
   bottom: -8px;
@@ -101,6 +93,13 @@
   display: flex;
   color: #ffffff;
   font-size: 13px;
+}
+
+.namesContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .bold {
