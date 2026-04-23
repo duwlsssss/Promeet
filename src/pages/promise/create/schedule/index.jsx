@@ -42,29 +42,18 @@ const SchedulePage = () => {
     // 날짜별로 여러 구간을 각각 객체로 변환
     const flattenedTimes = [];
 
-    // 데이터 평탄화 (Flat) 로직
     availableTimes.forEach((item) => {
-      // 생성자가 시간을 선택하지 않은 경우 -> 00:00 ~ 24:00로 한 구간 생성
-      if (!item.timeRanges || item.timeRanges.length === 0) {
+      if (!item.timeRanges || item.timeRanges.length === 0) return;
+
+      item.timeRanges.forEach((range) => {
         flattenedTimes.push({
           id: uuidv4(),
           date: item.date,
           day: item.day,
-          startTime: '00:00',
-          endTime: '24:00',
+          startTime: range.startTime,
+          endTime: range.endTime,
         });
-      } else {
-        // 선택한 시간이 있는 경우 -> 각 구간별로 객체 생성
-        item.timeRanges.forEach((range) => {
-          flattenedTimes.push({
-            id: uuidv4(),
-            date: item.date,
-            day: item.day,
-            startTime: range.startTime,
-            endTime: range.endTime,
-          });
-        });
-      }
+      });
     });
 
     try {
