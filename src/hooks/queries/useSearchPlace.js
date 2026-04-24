@@ -99,12 +99,9 @@ const useSearchPlace = (category) => {
           address: place.road_address_name ?? place.address_name,
           link: place.place_url,
           position: new window.kakao.maps.LatLng(place.y, place.x),
-          isLiked: false,
-          likesCount: 0,
         }));
 
-        const sortedPlaces = places.sort((p1, p2) => p2.likesCount - p1.likesCount);
-        setNearbyPlaces(sortedPlaces);
+        setNearbyPlaces(places);
       } else if (status === window.kakao.maps.services.Status.ZERO_RESULT) {
         setNearbyPlaces([]);
       } else if (status === window.kakao.maps.services.Status.ERROR) {
@@ -115,61 +112,57 @@ const useSearchPlace = (category) => {
     [category],
   );
 
+  // 서버 리패치 시 centerStation 객체 참조가 바뀌어도 값이 같으면 동일 참조 유지
+  // → 검색 effect가 불필요하게 재실행되지 않도록 방지
+  const stableCenterStation = useMemo(
+    () => centerStation,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [centerStation?.name, centerStation?.position?.Ma, centerStation?.position?.La],
+  );
+
   // 장소 검색
   useEffect(() => {
-    if (!ps || isSearching || !centerStation?.name) return;
+    if (!ps || isSearching || !stableCenterStation?.name) return;
 
     setIsSearching(true); // 검색 시작 시 로딩 활성화
     setNearbyPlaces([]);
 
-    const keyword = `${centerStation.name} ${CATEGORY_LABEL[category]}`.trim();
+    const keyword = `${stableCenterStation.name} ${CATEGORY_LABEL[category]}`.trim();
 
     ps.keywordSearch(keyword, handleSearchResults, {
-      location: new window.kakao.maps.LatLng(centerStation.position.Ma, centerStation.position.La),
+      location: new window.kakao.maps.LatLng(
+        stableCenterStation.position.Ma,
+        stableCenterStation.position.La,
+      ),
       radius: 1000, // 중심점으로부터 1km 반경 내 검색
       sort: window.kakao.maps.services.SortBy.DISTANCE, // 거리순 정렬
     });
-  }, [category, centerStation, ps, handleSearchResults]);
+    // isSearching은 실행 여부를 가드하는 용도, 의존성에서 제외
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, stableCenterStation, ps, handleSearchResults]);
 
-  // 주변 장소에 좋아요 정보 추가
-  const mergedNearbyPlaces = useMemo(() => {
-    if (isSearching) return [];
-
-    return nearbyPlaces.map((place) => {
-      const likedPlace = likedPlaces.find((p) => p.place.placeId === place.placeId);
-      if (likedPlace) {
-        const hasMyLike = likedPlace.userIds.includes(userId);
-        return {
-          ...place,
-          isLiked: hasMyLike,
-          likesCount: likedPlace.likesCount,
-        };
-      }
-      return place;
-    });
-  }, [nearbyPlaces, likedPlaces, userId, isSearching]);
-
-  // 좋아요 장소를 카카오 맵 형식으로 변환
-  const mergedLikedPlaces = useMemo(() => {
+  // 좋아요 장소를 카카오 맵 형식으로 변환 (좋아요 추가/제거 시에만 바뀜)
+  const likedPlacesList = useMemo(() => {
     return likedPlaces.map((likedPlace) => ({
       placeId: likedPlace.place.placeId,
       type: likedPlace.place.type,
       name: likedPlace.place.name,
       address: likedPlace.place.address,
+      phone: likedPlace.place.phone,
+      link: likedPlace.place.link,
       position: new window.kakao.maps.LatLng(
         likedPlace.place.position.Ma,
         likedPlace.place.position.La,
       ),
-      isLiked: likedPlace.userIds.includes(userId),
-      likesCount: likedPlace.likesCount,
     }));
-  }, [likedPlaces, userId]);
+  }, [likedPlaces]);
 
-  // 마커용 장소 목록
+  // 근처 탭: nearbyPlaces 그대로 사용 (좋아요 변경에 영향 없음)
+  // 좋아요 탭: likedPlacesList 사용
   const places = useMemo(() => {
     if (isSearching) return [];
-    return isLikeList ? mergedLikedPlaces : mergedNearbyPlaces;
-  }, [isLikeList, mergedLikedPlaces, mergedNearbyPlaces, isSearching]);
+    return isLikeList ? likedPlacesList : nearbyPlaces;
+  }, [isLikeList, likedPlacesList, nearbyPlaces, isSearching]);
 
   const handleNextBtnClick = () => {
     if (userType === 'create' && selectedPlace) {
@@ -191,15 +184,25 @@ const useSearchPlace = (category) => {
     }
   };
 
+  // markers는 places와 myLocation이 실제로 바뀔 때만 재생성 (좋아요 변경 시 근처 탭은 불변)
+  const markers = useMemo(() => {
+    return myLocation ? [...places, myLocation] : places;
+  }, [places, myLocation]);
+
+  // [] 리터럴을 매 렌더마다 새로 만들면 MarkerManager useEffect가 계속 재실행됨
+  const finalRoutes = useMemo(() => {
+    return isAllMembersSubmit ? routes : [];
+  }, [isAllMembersSubmit, routes]);
+
   return {
     descText: getDescText(userType, btnDisabled, !!selectedPlace, isFinalizePending),
     btnText: getBtnText(userType, selectedPlace),
     btnDisabled,
     places,
-    myLocation,
+    markers,
     isLoading: isSearching,
     isLikeList,
-    routes: isAllMembersSubmit ? routes : [],
+    routes: finalRoutes,
     handleNextBtnClick,
     isUserDataPending,
   };

@@ -15,7 +15,7 @@ const SearchPlace = ({ category }) => {
     btnText,
     btnDisabled,
     places,
-    myLocation,
+    markers,
     isLoading,
     isLikeList,
     routes,
@@ -24,7 +24,7 @@ const SearchPlace = ({ category }) => {
 
   return (
     <>
-      <MarkerManager markers={[...places, ...(myLocation ? [myLocation] : [])]} routes={routes} />
+      <MarkerManager markers={markers} routes={routes} />
       <BottomSheet id={MAP_BS_ID}>
         <S.ListContainer>
           <PlaceLikeToggle />

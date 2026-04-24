@@ -32,8 +32,11 @@ const PlaceCardList = ({ places, isLoading, emptyText, onCardClick }) => {
   return (
     <S.Container>
       {places.length > 0 ? (
-        places.map((place, i) => (
-          <div key={i} ref={place.placeId === selectedOverlayId ? selectedOverlayRef : null}>
+        places.map((place) => (
+          <div
+            key={place.placeId}
+            ref={place.placeId === selectedOverlayId ? selectedOverlayRef : null}
+          >
             <PlaceCard
               placeId={place.placeId}
               position={place.position}
@@ -42,8 +45,6 @@ const PlaceCardList = ({ places, isLoading, emptyText, onCardClick }) => {
               address={place.address}
               phone={place.phone}
               link={place.link}
-              isLiked={place.isLiked}
-              likesCount={place.likesCount}
               $isRetrieved={place.placeId === selectedOverlayId}
               {...(onCardClick && { onClick: () => onCardClick(place) })}
             />
@@ -69,8 +70,6 @@ PlaceCardList.propTypes = {
       address: PropTypes.string.isRequired,
       phone: PropTypes.string,
       link: PropTypes.string,
-      isLiked: PropTypes.bool.isRequired,
-      likesCount: PropTypes.number.isRequired,
     }),
   ).isRequired,
   isLoading: PropTypes.bool.isRequired,

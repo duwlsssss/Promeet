@@ -1,6 +1,7 @@
 import * as S from './style';
 import PropTypes from 'prop-types';
 import { AnimatePresence, useDragControls, useMotionValue } from 'framer-motion';
+import { useMemo } from 'react';
 import { useBottomSheetInfo, useBottomSheetActions } from '@/hooks/stores/ui/useBottomSheetStore';
 import { MAP_BS_ID } from '@/constants/map';
 
@@ -12,14 +13,17 @@ import { MAP_BS_ID } from '@/constants/map';
  */
 const BottomSheet = ({ id, children }) => {
   const isMapBS = id === MAP_BS_ID;
-  const bottomSheetVariants = {
-    opened: { top: 'var(--place-category-tab-height)' },
-    closed: {
-      top: isMapBS
-        ? `calc(100% - var(--bs-header-height) - var(--next-btn-container-height))`
-        : `calc(100% - var(--bs-header-height)`,
-    },
-  };
+  const bottomSheetVariants = useMemo(
+    () => ({
+      opened: { top: 'var(--place-category-tab-height)' },
+      closed: {
+        top: isMapBS
+          ? `calc(100% - var(--bs-header-height) - var(--next-btn-container-height))`
+          : `calc(100% - var(--bs-header-height)`,
+      },
+    }),
+    [isMapBS],
+  );
 
   const offsetThreshold = 100;
   const deltaThreshold = 5;

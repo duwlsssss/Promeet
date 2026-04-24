@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import * as S from './style';
 import PropTypes from 'prop-types';
 import matchIcon from '@/utils/matchIcon.jsx';
 import usePlaceCardHandlers from './hooks/usePlaceCardHandlers';
+import LikeButton from './LikeButton';
 import { CATEGORY } from '@/constants/place';
 
 const PlaceCard = ({
@@ -16,24 +18,22 @@ const PlaceCard = ({
   $isRetrieved,
 }) => {
   const place = { placeId, type, name, position, address, phone, link };
-  const {
-    showHeart,
-    isCreator,
-    isLiked,
-    likesCount,
-    isSelected,
-    isRetrieved,
-    handleCardClick,
-    handleLikeToggle,
-    handleClickFixPlaceBtn,
-  } = usePlaceCardHandlers(place, $isRetrieved);
+  const { showHeart, isCreator, isSelected, isRetrieved, handleCardClick, handleClickFixPlaceBtn } =
+    usePlaceCardHandlers(place, $isRetrieved);
+
+  // 값이 같으면 같은 객체 참조 유지 → framer-motion이 불필요한 애니메이션 실행 안 함
+  const animateConfig = useMemo(
+    () => ({
+      backgroundColor: isRetrieved ? 'rgba(64, 181, 159, 0.31)' : 'rgba(255, 255, 255, 1)',
+    }),
+    [isRetrieved],
+  );
 
   return (
     <S.PlaceCard
       $isSelected={isSelected}
-      animate={{
-        backgroundColor: isRetrieved ? 'rgba(64, 181, 159, 0.31)' : 'rgba(255, 255, 255, 1)',
-      }}
+      initial={false}
+      animate={animateConfig}
       transition={{ duration: 1.5 }}
     >
       <S.CardBackground onClick={onClick ?? handleCardClick}>
@@ -63,19 +63,14 @@ const PlaceCard = ({
           ) : null}
         </S.CardLeft>
 
-        {showHeart ? (
-          <S.CardRight>
-            <S.HeartWrapper onClick={handleLikeToggle}>
-              {isLiked ? <S.FilledHeartIcon /> : <S.EmptyHeartIcon />}
-            </S.HeartWrapper>
-            <S.heartCnt>{likesCount}</S.heartCnt>
-          </S.CardRight>
-        ) : null}
+        {showHeart ? <LikeButton place={place} /> : null}
       </S.CardBackground>
     </S.PlaceCard>
   );
 };
 
+// isLiked, likesCount는 PlaceCard에서 직접 관리하지 않고 PlaceLikeToggle에서 관리
+// → PlaceCardList에서 PlaceCard로 props로 넘겨줄 필요 없음
 PlaceCard.propTypes = {
   placeId: PropTypes.string.isRequired,
   position: PropTypes.shape({

@@ -5,7 +5,8 @@ import MapContainer from '../MapContainer';
 import SearchPlace from '../SearchPlace';
 import { useTabsInfo } from '@/hooks/stores/ui/useTabsStore';
 import { useLocationInfo, useLocationActions } from '@/hooks/stores/promise/useLocationStore';
-import { usePromiseDataFromServerInfo } from '@/hooks/stores/promise/usePromiseDataFromServerStore';
+import { useShallow } from 'zustand/shallow';
+import promiseDataFromServerStore from '@/stores/promise/promiseDataFromServerStore';
 import useHandleError from '@/hooks/useHandleError';
 import { CATEGORY, CATEGORY_LABEL } from '@/constants/place';
 import { MY_LOC_MARKER_ID, DEFAULT_LAT, DEFAULT_LNG } from '@/constants/map';
@@ -15,8 +16,13 @@ const PlaceCategoryMap = () => {
   const { selectedValue } = useTabsInfo();
   const { allowMyLocation } = useLocationInfo();
   const { setMyLocation } = useLocationActions();
-  const { promiseDataFromServer } = usePromiseDataFromServerInfo();
-  const { centerStation, canFix } = promiseDataFromServer;
+  // likedPlaces 변경에 반응하지 않도록 필요한 필드만 선택
+  const { centerStation, canFix } = promiseDataFromServerStore(
+    useShallow((state) => ({
+      centerStation: state.promiseDataFromServer?.centerStation,
+      canFix: state.promiseDataFromServer?.canFix,
+    })),
+  );
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
   const handleError = useHandleError();
