@@ -30,7 +30,6 @@ import JoinResultPage from '../pages/promise/[id]/result';
 import SummaryPage from '../pages/promise/[id]/summary';
 
 import UserPage from '../pages/user/index';
-import EnterSchedulePage from '../pages/user/enter-schedule';
 
 import NotFoundPage from '../pages/not-found';
 
@@ -129,10 +128,6 @@ const privateRoutes = [
   {
     path: ROUTES.USER,
     element: <UserPage />,
-  },
-  {
-    path: ROUTES.ENTER_SCHEDULE,
-    element: <EnterSchedulePage />,
   },
   // 404
   {

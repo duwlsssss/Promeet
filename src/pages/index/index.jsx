@@ -10,7 +10,7 @@ import { useUserInfo } from '@/hooks/stores/auth/useUserStore';
 import { BUILD_ROUTES, ROUTES } from '@/constants/routes';
 import alarmIcon from '@/assets/img/icon/alarm.svg';
 import Card from '@/components/ui/card';
-import AppointmentCard from '@/components/ui/ddaycard';
+import AppointmentCard from '@/components/ui/AppiontmentCard';
 import toast from '@/utils/toast';
 
 // 오늘, 다가오는 약속 추출
@@ -64,8 +64,6 @@ const HomePage = () => {
   // falsy값 제거해 정상적으로 받은 데이터만 필터링
   const createdPromises = createQueries.map((q) => q.data).filter(Boolean);
   const joinedPromises = joinQueries.map((q) => q.data).filter(Boolean);
-
-  // console.log('참여 요청받은 약속', joinIds, '생성한 약속', createIds);
 
   const allPromises = [...createdPromises, ...joinedPromises]; // 생성 + 초대
   const { todayPromises } = classifyPromises(allPromises);

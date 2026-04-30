@@ -52,14 +52,12 @@ export const Quarter = styled.div`
 
   width: 100%;
 
-  background: ${({ selected, $isFixed, $disabled }) =>
+  background: ${({ selected, $disabled }) =>
     $disabled
       ? '#F5F5F5' // 비활성화 (생성자 미제안)
-      : $isFixed
-        ? '#FFEBEC' // 내 고정 일정
-        : selected
-          ? '#40B59F' // 내가 선택한 시간
-          : 'transparent'};
+      : selected
+        ? '#40B59F' // 내가 선택한 시간
+        : 'transparent'};
 
   &:active {
     background: #40b59f;

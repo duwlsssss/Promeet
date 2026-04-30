@@ -12,12 +12,10 @@ import useGetUserData from '@/hooks/queries/useGetUserData';
 import useFinalizePromise from '@/hooks/mutations/useFinalizePromise';
 import { BUILD_ROUTES } from '@/constants/routes';
 
-const getDescText = (userType, btnDisabled, hasSelectedPlace, isFinalizePending) => {
+const getDescText = (userType, btnDisabled, hasSelectedPlace, isFinalizePending, canFix) => {
   const descTexts = {
     create: {
-      true: hasSelectedPlace
-        ? '최종 약속 장소를 선택해주세요'
-        : '모든 사용자가 좋아요를 입력해야해요',
+      true: canFix ? '최종 약속 장소를 선택해주세요' : '모든 사용자가 좋아요를 눌러야 해요',
       false: isFinalizePending ? '약속 확정 중' : '약속 장소를 선택해주세요',
     },
     join: {
@@ -31,7 +29,7 @@ const getDescText = (userType, btnDisabled, hasSelectedPlace, isFinalizePending)
 const getBtnText = (userType, selectedPlace) => {
   const btnTexts = {
     create: selectedPlace?.placeId ? '이 장소를 선택' : '장소 카드를 선택해주세요',
-    join: '약속 정보 보기',
+    join: '약속 결과 보기',
   };
   return btnTexts[userType];
 };
@@ -56,31 +54,24 @@ const useSearchPlace = (category) => {
   const {
     centerStation = DEFAULT_SUBWAY_STATION,
     likedPlaces = [],
-    members = [],
-    memberCnt = 0,
     routes = [],
     isAllMembersSubmit,
+    canFix,
   } = promiseDataFromServer ?? {};
 
   const { isPending: isUserDataPending } = useGetUserData(userId);
   const isInvitedMember = promises.join.includes(promiseId);
   const userType = isInvitedMember ? 'join' : 'create';
 
-  // 모든 멤버가 좋아요를 눌렀는지 확인
-  const allMembersLiked = useMemo(() => {
-    if (members.length !== memberCnt) return false;
-    return memberCnt - 1 === members.filter((m) => m.hasLikedPlace).length;
-  }, [members, memberCnt]);
-
   // 버튼 비활성화 조건
   const btnDisabled = useMemo(() => {
     if (userType === 'create') {
       // 생성자는 모든 멤버가 좋아요를 눌렀을 때만 버튼 활성화
-      return !selectedPlace || !allMembersLiked;
+      return !selectedPlace || !canFix;
     }
     // 참여자는 자신이 좋아요를 눌렀을 때만 버튼 활성화
     return !likedPlaces?.some((place) => place.userIds.includes(userId));
-  }, [userType, selectedPlace, allMembersLiked, likedPlaces, userId]);
+  }, [userType, selectedPlace, canFix, likedPlaces, userId]);
 
   // Places 서비스 초기화
   const ps = useMemo(() => {
@@ -165,7 +156,7 @@ const useSearchPlace = (category) => {
   }, [isLikeList, likedPlacesList, nearbyPlaces, isSearching]);
 
   const handleNextBtnClick = () => {
-    if (userType === 'create' && selectedPlace) {
+    if (userType === 'create' && selectedPlace && canFix) {
       const place = {
         placeId: selectedPlace.placeId,
         type: selectedPlace.type,
@@ -195,7 +186,7 @@ const useSearchPlace = (category) => {
   }, [isAllMembersSubmit, routes]);
 
   return {
-    descText: getDescText(userType, btnDisabled, !!selectedPlace, isFinalizePending),
+    descText: getDescText(userType, btnDisabled, !!selectedPlace, isFinalizePending, canFix),
     btnText: getBtnText(userType, selectedPlace),
     btnDisabled,
     places,

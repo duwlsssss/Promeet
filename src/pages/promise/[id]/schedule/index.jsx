@@ -1,7 +1,6 @@
 import * as S from './style';
 import { useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 import Header from '@/components/promise/Header';
 import Button from '@/components/ui/Button';
 import AbleTimeTable from '@/components/timeTable/AbleTimeTable';
@@ -98,7 +97,6 @@ const JoinSchedulePage = () => {
     storedTimes.forEach((item) => {
       item.timeRanges.forEach((range) => {
         flatAvailableTimes.push({
-          id: uuidv4(),
           date: item.date,
           day: item.day,
           startTime: range.startTime,

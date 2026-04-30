@@ -11,7 +11,7 @@ function getTimeFromIndex(hourIdx, quarterIdx) {
   return `${hour}:${minute}`;
 }
 
-const AbleTimeTable = ({ days, onChange, fixedSchedules = [], isFullTime = false }) => {
+const AbleTimeTable = ({ days, onChange, isFullTime = false }) => {
   const { minHour, maxHour } = useMemo(() => {
     // 생성 페이지(isFullTime)이거나 데이터가 없으면 무조건 0~24
     if (isFullTime || !days.some((d) => d.timeRanges?.length > 0)) {
@@ -39,9 +39,6 @@ const AbleTimeTable = ({ days, onChange, fixedSchedules = [], isFullTime = false
     [minHour, maxHour],
   );
 
-  // 실제 시간 인덱스 헬퍼
-  const getActualHour = (rowIdx) => parseInt(visibleHours[rowIdx]);
-
   // 초기 상태를 24시간 혹은 계산된 범위에 맞게 설정
   const [selected, setSelected] = useState(() =>
     Array.from({ length: maxHour - minHour }, () =>
@@ -66,7 +63,7 @@ const AbleTimeTable = ({ days, onChange, fixedSchedules = [], isFullTime = false
       // 생성 페이지라면 모든 칸이 사용 가능
       if (isFullTime) return true;
 
-      const actualHour = getActualHour(rowIdx);
+      const actualHour = parseInt(visibleHours[rowIdx]);
       const cellTime = getTimeFromIndex(actualHour, quarterIdx);
       const dayData = days[dayIdx];
 
@@ -79,7 +76,7 @@ const AbleTimeTable = ({ days, onChange, fixedSchedules = [], isFullTime = false
         return start <= cellTime && cellTime < end;
       });
     },
-    [days, isFullTime, getActualHour],
+    [days, isFullTime, visibleHours],
   );
 
   const isDragging = useRef(false);
@@ -119,24 +116,6 @@ const AbleTimeTable = ({ days, onChange, fixedSchedules = [], isFullTime = false
     if (onChange) onChange(selected);
   }, [selected, onChange, days.length]);
 
-  // 고정 일정 셀 여부
-  const isFixedCell = useCallback(
-    (day, hourIdx, quarterIdx) => {
-      const cellTime = getTimeFromIndex(hourIdx, quarterIdx);
-
-      return fixedSchedules.some((fs) => {
-        const startTime = `${fs.startTime.hour}:${fs.startTime.minute}`;
-        const endTime =
-          fs.endTime.hour === '00' && fs.endTime.minute === '00'
-            ? '24:00'
-            : `${fs.endTime.hour}:${fs.endTime.minute}`;
-
-        return fs.day === day && startTime <= cellTime && cellTime < endTime;
-      });
-    },
-    [fixedSchedules],
-  );
-
   // 렌더링 방어 코드: 인덱스 에러 방지
   if (selected.length === 0 || selected.length !== maxHour - minHour) return null;
 
@@ -171,15 +150,12 @@ const AbleTimeTable = ({ days, onChange, fixedSchedules = [], isFullTime = false
           {days.map((item, dayIdx) => (
             <S.Cell key={dayIdx}>
               {Array.from({ length: 4 }).map((_, quarterIdx) => {
-                const actualHour = parseInt(hour);
-                const isFixed = isFixedCell(item.day, actualHour, quarterIdx);
                 // 생성자가 제안한 시간이 아니면 비활성화
                 const isAvailable = isCreatorAvailable(dayIdx, hourIdx, quarterIdx);
                 return (
                   <S.Quarter
                     key={quarterIdx}
                     selected={selected[hourIdx]?.[dayIdx]?.[quarterIdx] || false}
-                    $isFixed={isFixed}
                     $disabled={!isAvailable}
                     onMouseDown={(e) => {
                       if (!isAvailable) return;

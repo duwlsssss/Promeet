@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+// --- 원형(circle) 변형 ---
+
 export const CircleCard = styled.div`
   position: relative;
 
@@ -34,10 +36,9 @@ export const CircleCardDday = styled.div`
   font-size: 18px;
   font-weight: 700;
 
-  /* 지난 약속(완료)일 때 회색 처리 */
   &.past {
-    color: #888888 !important; /* 숫자/글자 연회색 */
-    background: #f2f3f5 !important; /* 원 배경 연회색 */
+    color: #888888 !important;
+    background: #f2f3f5 !important;
   }
 `;
 
@@ -55,7 +56,7 @@ export const CircleCardCenterText = styled.div`
   text-align: center;
 
   &.past {
-    color: #b0b0b0 !important; /* 아래에 있는 글자도 연회색 */
+    color: #b0b0b0 !important;
   }
 `;
 
@@ -84,4 +85,40 @@ export const CircleCardLabel = styled.div`
   color: ${({ $color }) => $color || '#001a41'};
   text-align: center;
   white-space: nowrap;
+`;
+
+// --- 카드(card) 변형 ---
+
+export const Card = styled.div`
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 10px;
+  justify-content: space-between;
+
+  width: 140px;
+  min-height: 90px;
+  padding: 14px 16px;
+  border-radius: 14px;
+
+  background: ${({ $isPast }) => ($isPast ? '#f5f5f5' : '#eaf1ff')};
+`;
+
+export const CardDday = styled.span`
+  font-size: 12px;
+  font-weight: 700;
+  color: ${({ $isPast, $isUnfixed }) => ($isPast ? '#bbb' : $isUnfixed ? '#888' : '#40b59f')};
+`;
+
+export const CardTitle = styled.div`
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ $isPast }) => ($isPast ? '#aaa' : '#001a41')};
 `;

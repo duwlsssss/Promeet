@@ -52,43 +52,6 @@ export const LogoutButton = styled.button`
   }
 `;
 
-// 고정 일정 버튼
-export const FixedButton = styled.button`
-  cursor: pointer;
-
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-
-  width: 380px;
-  max-width: 95%;
-  height: 166px;
-  margin: 32px auto 0;
-  padding: 32px 24px;
-  border: none;
-  border-radius: 16px;
-
-  background: #40b59f;
-`;
-
-export const FixedButtonTitle = styled.h3`
-  font-family: 'Pretendard Variable', sans-serif;
-  font-size: 24px;
-  font-weight: 700;
-  color: white;
-`;
-
-export const FixedButtonDesc = styled.p`
-  font-family: 'Pretendard Variable', sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 21px;
-  color: white;
-  text-align: left;
-`;
-
 // 섹션 타이틀
 export const SectionTitle = styled.h4`
   width: 100%;

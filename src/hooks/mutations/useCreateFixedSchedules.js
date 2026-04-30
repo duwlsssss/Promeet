@@ -14,7 +14,7 @@ const useCreateFixedSchedules = () => {
   return useMutation({
     mutationFn: ({ fixedSchedules }) => postFixedSchedules(userId, fixedSchedules),
     onSuccess: (_, __) => {
-      // 유저 정보 캐시 무효화 (고정 일정 포함)
+      // 유저 정보 캐시 무효화
       queryClient.refetchQueries({ queryKey: [QUERY_KEY.user, userId] });
     },
     onError: (error) => {

@@ -12,7 +12,6 @@ export const stationShape = PropTypes.shape({
 });
 
 export const timeShape = PropTypes.shape({
-  id: PropTypes.string.isRequired,
   date: PropTypes.string.isRequired,
   day: PropTypes.string.isRequired,
   startTime: PropTypes.string.isRequired,

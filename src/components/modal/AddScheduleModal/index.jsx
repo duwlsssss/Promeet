@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import DaySelectModal from '@/components/modal/DaySelectModal';
 import TimeSelectModal from '@/components/modal/TimeSelectModal';
 import selectIcon from '@/assets/img/icon/dropdown.svg';
@@ -10,7 +9,6 @@ import { DAYS } from '@/constants/calender';
 import * as S from './style';
 
 const defaultSchedule = (title = '') => ({
-  id: title ? `${title}-${uuidv4().slice(0, 8)}` : uuidv4(),
   title, // title 필드도 같이 저장
   day: 'Monday',
   startTime: { hour: '09', minute: '00' },

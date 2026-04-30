@@ -1,14 +1,14 @@
-import React from 'react';
 import * as S from './style';
-import logoutIcon from '../../../assets/img/icon/logout.svg';
-import AppointmentCard from '../../../components/ui/ddaycard';
+import logoutIcon from '../../assets/img/icon/logout.svg';
+import AppointmentCard from '../../components/ui/AppiontmentCard';
 import Navbar from '@/layouts/Navbar';
 import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 import { useUserInfo } from '@/hooks/stores/auth/useUserStore';
 import useLogout from '@/hooks/mutations/useLogout';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '@/constants/routes';
 import useGetUserData from '@/hooks/queries/useGetUserData';
+import useGetMultiplePromiseData from '@/hooks/queries/useGetMultiplePromiseData';
+import { BUILD_ROUTES } from '@/constants/routes';
 
 // D-day 계산 함수
 function getDday(dateStr) {
@@ -32,55 +32,61 @@ function getPastAppointments(promises) {
     }));
 }
 
-const FixedScheduleButton = () => {
-  const navigate = useNavigate();
-  return (
-    <S.FixedButton onClick={() => navigate(ROUTES.ENTER_SCHEDULE)}>
-      <S.FixedButtonTitle>고정 일정</S.FixedButtonTitle>
-      <S.FixedButtonDesc>
-        매주 반복되는 일정을 설정하여
-        <br />
-        편리하게 약속을 잡으세요.
-      </S.FixedButtonDesc>
-    </S.FixedButton>
-  );
-};
-
 const UserPage = () => {
   const { userId, userName } = useUserInfo();
   const { mutate: logout } = useLogout();
+  const navigate = useNavigate();
 
   // 서버에서 사용자 데이터 받아오기
   const { data, isPending } = useGetUserData(userId);
 
-  // 실제 데이터로 대체
-  const createdPromises = data?.promises?.create ?? [];
-  const joinedPromises = data?.promises?.join ?? [];
+  // ID 배열 추출
+  const createIds = data?.promises?.create ?? [];
+  const joinIds = data?.promises?.join ?? [];
 
-  // 오늘 또는 미래 약속만 남기는 필터 함수
+  // 각 ID로 약속 전체 데이터 패치
+  const createQueries = useGetMultiplePromiseData(createIds, userId);
+  const joinQueries = useGetMultiplePromiseData(joinIds, userId);
+
+  const isPromisesPending =
+    createQueries.some((q) => q.isPending) || joinQueries.some((q) => q.isPending);
+
+  const createdPromises = createQueries.map((q) => q.data).filter(Boolean);
+  const joinedPromises = joinQueries.map((q) => q.data).filter(Boolean);
+
+  // 확정 시간 기준 오늘 이상인지 (미확정 약속은 항상 통과)
+  const isActiveOrUnfixed = (p) => {
+    const firstTime = p.fixedTime?.[0];
+    if (!firstTime) return true;
+    return dayjs(firstTime.date).diff(dayjs().startOf('day'), 'day') >= 0;
+  };
+
+  // 오늘 또는 미래 확정 약속만
   const isUpcoming = (p) => {
     const firstTime = p.fixedTime?.[0];
     if (!firstTime) return false;
-    const dday = dayjs(firstTime.date).diff(dayjs().startOf('day'), 'day');
-    return dday >= 0;
+    return dayjs(firstTime.date).diff(dayjs().startOf('day'), 'day') >= 0;
   };
 
-  // 다가오는 약속: 오늘 또는 미래만
+  // 다가오는 약속: 오늘 또는 미래 확정 약속만
   const upcomingAppointments = createdPromises.filter(isUpcoming).map((p) => ({
+    promiseId: p.promiseId,
     label: p.title,
     dday: getDday(p.fixedTime[0]?.date),
   }));
 
-  // 초대된 약속: 오늘 또는 미래만
-  const invitedAppointments = joinedPromises.filter(isUpcoming).map((p) => ({
+  // 초대된 약속: 미확정 포함, 지난 약속 제외
+  const invitedAppointments = joinedPromises.filter(isActiveOrUnfixed).map((p) => ({
+    promiseId: p.promiseId,
     label: p.title,
-    dday: '수락',
+    dday: p.fixedTime?.[0] ? getDday(p.fixedTime[0].date) : '미확정',
   }));
 
-  // 제안한 약속: 오늘 또는 미래만
-  const proposedAppointments = createdPromises.filter(isUpcoming).map((p) => ({
+  // 제안한 약속: 미확정 포함, 지난 약속 제외
+  const proposedAppointments = createdPromises.filter(isActiveOrUnfixed).map((p) => ({
+    promiseId: p.promiseId,
     label: p.title,
-    dday: '제안',
+    dday: p.fixedTime?.[0] ? getDday(p.fixedTime[0].date) : '미확정',
   }));
 
   // 지난 약속
@@ -89,7 +95,7 @@ const UserPage = () => {
     ...getPastAppointments(joinedPromises),
   ];
 
-  if (isPending) return <div>로딩중...</div>;
+  if (isPending || isPromisesPending) return <div>로딩중...</div>;
 
   return (
     <>
@@ -105,8 +111,6 @@ const UserPage = () => {
               <img src={logoutIcon} alt="로그아웃" />
             </S.LogoutButton>
           </S.UserHeader>
-
-          <FixedScheduleButton />
 
           <S.SectionTitle>다가오는 약속</S.SectionTitle>
           <S.CardList>
@@ -127,12 +131,15 @@ const UserPage = () => {
           <S.CardList>
             {invitedAppointments.length === 0 ? (
               <S.CardWrapper>
-                <div style={{ color: '#aaa', fontSize: 14 }}>초대된 약속이 없습니다.</div>
+                <div>초대된 약속이 없습니다.</div>
               </S.CardWrapper>
             ) : (
-              invitedAppointments.map((item, index) => (
-                <S.CardWrapper key={index}>
-                  <AppointmentCard {...item} />
+              invitedAppointments.map((item) => (
+                <S.CardWrapper
+                  key={item.promiseId}
+                  onClick={() => navigate(BUILD_ROUTES.PROMISE_RESULT(item.promiseId))}
+                >
+                  <AppointmentCard dday={item.dday} label={item.label} variant="card" />
                 </S.CardWrapper>
               ))
             )}
@@ -142,12 +149,15 @@ const UserPage = () => {
           <S.CardList>
             {proposedAppointments.length === 0 ? (
               <S.CardWrapper>
-                <div style={{ color: '#aaa', fontSize: 14 }}>제안한 약속이 없습니다.</div>
+                <div>제안한 약속이 없습니다.</div>
               </S.CardWrapper>
             ) : (
-              proposedAppointments.map((item, index) => (
-                <S.CardWrapper key={index}>
-                  <AppointmentCard {...item} />
+              proposedAppointments.map((item) => (
+                <S.CardWrapper
+                  key={item.promiseId}
+                  onClick={() => navigate(BUILD_ROUTES.PROMISE_FINALIZE(item.promiseId))}
+                >
+                  <AppointmentCard dday={item.dday} label={item.label} variant="card" />
                 </S.CardWrapper>
               ))
             )}

@@ -20,7 +20,7 @@ export const ROUTES = {
 
   // 유저
   USER: '/user',
-  ENTER_SCHEDULE: '/user/enter-schedule',
+
   NOT_FOUND: '*',
 };
 

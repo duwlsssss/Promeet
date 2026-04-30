@@ -4,7 +4,7 @@ import { usePromiseDataFromServerInfo } from '@/hooks/stores/promise/usePromiseD
 import useToggleLikePlace from '@/hooks/mutations/useToggleLikePlace';
 import * as S from '../style';
 import PropTypes from 'prop-types';
-import { CATEGORY } from '@/constants/promise';
+import { CATEGORY } from '@/constants/place';
 
 const LikeButton = ({ place }) => {
   const { promiseId } = useParams();

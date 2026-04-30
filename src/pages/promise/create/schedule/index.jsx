@@ -1,7 +1,6 @@
 import * as S from './style';
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 import Header from '@/components/promise/Header';
 import Button from '@/components/ui/Button';
 import ShareLinkModal from '@/components/modal/ShareLinkModal';
@@ -47,7 +46,6 @@ const SchedulePage = () => {
 
       item.timeRanges.forEach((range) => {
         flattenedTimes.push({
-          id: uuidv4(),
           date: item.date,
           day: item.day,
           startTime: range.startTime,
