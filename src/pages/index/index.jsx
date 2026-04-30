@@ -45,14 +45,12 @@ const HomePage = () => {
   const location = useLocation();
   const { userId, userName, promises } = useUserInfo();
 
-  // toastMessage 넘어왔으면 표시
   useEffect(() => {
     if (location.state?.toastMessage) {
       toast(location.state.toastMessage);
     }
   }, [location.state]);
 
-  // 실제 데이터로 대체
   const createIds = promises.create ?? []; // 생성한 약속 ids
   const joinIds = promises.join ?? []; // 초대받은 약속 ids
 
@@ -288,3 +286,6 @@ function getDday(dateStr) {
   if (diff > 0) return `D-${diff}`;
   return `D+${Math.abs(diff)}`;
 }
+
+// 69f15db129c9c0e87f9cfa4b
+// 69f314e2f63808ff82992b68

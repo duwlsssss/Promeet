@@ -12,8 +12,9 @@ const useGetMultiplePromiseData = (promiseIds, userId) => {
       queryFn: async () => {
         try {
           const { data } = await getPromiseData(promiseId, userId);
-          return data;
+          return data ?? null;
         } catch (error) {
+          if (error?.response?.status === 404) return null; // 삭제된 약속은 무시
           handleError(error);
           throw error;
         }

@@ -13,7 +13,7 @@ const useGetUserData = (userId, readOnly = false) => {
     queryFn: async () => {
       try {
         const { data } = await getUserData(userId);
-        if (!readOnly) {
+        if (!readOnly && data) {
           // 데이터를 가져오자마자 store 업데이트
           const { name, fixedSchedule, promises } = data;
           setUserName(name);
@@ -24,7 +24,7 @@ const useGetUserData = (userId, readOnly = false) => {
           });
         }
 
-        return data;
+        return data ?? null;
       } catch (error) {
         handleError(error);
         throw error;

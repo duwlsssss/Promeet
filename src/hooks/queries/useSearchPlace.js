@@ -12,7 +12,7 @@ import useGetUserData from '@/hooks/queries/useGetUserData';
 import useFinalizePromise from '@/hooks/mutations/useFinalizePromise';
 import { BUILD_ROUTES } from '@/constants/routes';
 
-const getDescText = (userType, btnDisabled, hasSelectedPlace, isFinalizePending, canFix) => {
+const getDescText = (userType, btnDisabled, isFinalizePending, canFix) => {
   const descTexts = {
     create: {
       true: canFix ? '최종 약속 장소를 선택해주세요' : '모든 사용자가 좋아요를 눌러야 해요',
