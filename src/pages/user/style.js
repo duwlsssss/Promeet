@@ -87,6 +87,7 @@ export const CardWrapper = styled.div`
 
 // 지난 약속 카드 색상(연회색) 적용
 export const PastCardWrapper = styled.div`
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;

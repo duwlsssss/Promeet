@@ -8,7 +8,7 @@ import { useUserInfo } from '@/hooks/stores/auth/useUserStore';
 import useLogout from '@/hooks/mutations/useLogout';
 import useGetUserData from '@/hooks/queries/useGetUserData';
 import useGetMultiplePromiseData from '@/hooks/queries/useGetMultiplePromiseData';
-import { BUILD_ROUTES } from '@/constants/routes';
+import { BUILD_ROUTES, ROUTES } from '@/constants/routes';
 
 // D-day 계산 함수
 function getDday(dateStr) {
@@ -21,12 +21,13 @@ function getDday(dateStr) {
   return `D+${Math.abs(diff)}`;
 }
 
-// 지난 약속 데이터 추출 함수
+// 지난 약속 데이터 추출 함수 (다가오는 약속과 동일하게 첫 확정 날짜 기준)
 function getPastAppointments(promises) {
   const today = dayjs().startOf('day');
   return promises
-    .filter((p) => p.fixedTime?.some((t) => dayjs(t.date).isBefore(today)))
+    .filter((p) => p.fixedTime?.[0] && dayjs(p.fixedTime[0].date).isBefore(today))
     .map((p) => ({
+      promiseId: p.promiseId,
       label: p.title,
       dday: '완료',
     }));
@@ -170,9 +171,16 @@ const UserPage = () => {
                 <div style={{ color: '#aaa', fontSize: 14 }}>지난 약속이 없습니다.</div>
               </S.CardWrapper>
             ) : (
-              pastAppointments.map((item, index) => (
-                <S.PastCardWrapper key={index}>
-                  <AppointmentCard {...item} />
+              pastAppointments.map((item) => (
+                <S.PastCardWrapper
+                  key={item.promiseId}
+                  onClick={() =>
+                    navigate(BUILD_ROUTES.PROMISE_SUMMARY(item.promiseId), {
+                      state: { backUrl: ROUTES.USER },
+                    })
+                  }
+                >
+                  <AppointmentCard dday={item.dday} label={item.label} />
                 </S.PastCardWrapper>
               ))
             )}
