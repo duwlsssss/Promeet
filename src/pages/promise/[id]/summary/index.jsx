@@ -1,5 +1,6 @@
 import * as S from './style';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from '@/components/promise/Header';
 import { usePromiseDataFromServerInfo } from '@/hooks/stores/promise/usePromiseDataFromServerStore';
 import { PROMISE_JOIN_HEADER_TEXT } from '@/constants/promise';
@@ -14,6 +15,9 @@ const SummaryPage = () => {
   // });
   const { promiseDataFromServer } = usePromiseDataFromServerInfo();
   const [isMapOpen, setIsMapOpen] = useState(false);
+  // 확정 직후 진입 시 -1로 가면 확정 화면으로 돌아가므로, 진입한 곳에서 넘겨준 경로가 없으면 홈으로
+  const location = useLocation();
+  const backUrl = location.state?.backUrl ?? ROUTES.HOME;
   const time = !promiseDataFromServer.fixedTime?.length
     ? '겹치는 시간이 없어요'
     : promiseDataFromServer.fixedTime
@@ -40,7 +44,7 @@ const SummaryPage = () => {
 
   return (
     <S.Container>
-      <Header text={PROMISE_JOIN_HEADER_TEXT} navigateUrl={ROUTES.HOME} />
+      <Header text={PROMISE_JOIN_HEADER_TEXT} navigateUrl={backUrl} />
       <S.InfoConainer>
         <S.Name>{promiseDataFromServer.title}</S.Name>
         <S.Description>{promiseDataFromServer.description}</S.Description>
