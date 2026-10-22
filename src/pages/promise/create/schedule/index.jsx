@@ -67,7 +67,7 @@ const SchedulePage = () => {
 
       // 서버 응답 구조에 맞춰 promiseId 추출
       const pId = res.data.promiseId;
-      const shareLink = `https://promeet-six.vercel.app/promise/${pId}/join`;
+      const shareLink = `${window.location.origin}${BUILD_ROUTES.PROMISE_JOIN(pId)}`;
 
       setPromiseId(pId);
       setShareLink(shareLink);
