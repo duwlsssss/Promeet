@@ -15,7 +15,7 @@ export default defineConfig({
     outDir: 'dist', // 반드시 dist로 설정
     emptyOutDir: true, // 기존 빌드 파일을 삭제
   },
-  base: './', // 상대 경로 설정 (Vercel에서 정적 파일 찾기 오류 방지)
+  base: '/', // 절대 경로: 중첩 경로에서 새로고침해도 /assets/를 찾도록 (상대 경로면 /promise/:id/assets/로 요청됨)
   server: {
     strictPort: true, // 개발시 포트 충돌 방지
   },
