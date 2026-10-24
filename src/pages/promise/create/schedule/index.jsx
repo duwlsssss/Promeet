@@ -13,7 +13,7 @@ import {
 } from '@/hooks/stores/promise/usePromiseDataStore';
 import useGetUserData from '@/hooks/queries/useGetUserData';
 import useCreatePromise from '@/hooks/mutations/useCreatePromise';
-import { PROMISE_CREATE_HEADER_TEXT } from '@/constants/promise';
+import { PROMISE_CREATE_HEADER_TEXT, TIME_TABLE_START_HOUR } from '@/constants/promise';
 import { BUILD_ROUTES, ROUTES } from '@/constants/routes';
 
 const SchedulePage = () => {
@@ -124,9 +124,12 @@ const SchedulePage = () => {
     selectedRef.current = selected;
 
     const newAvailableTimes = availableTimes.map((item, dayIdx) => {
-      // 24시간 전체 배열을 만듭니다.
+      // 24시간 전체 배열로 복원 (시간표 0행 = TIME_TABLE_START_HOUR시, 그 이전 시각은 선택 불가)
       const dayArr = Array.from({ length: 24 }, (_, h) =>
-        Array.from({ length: 4 }, (_, q) => selected[h]?.[dayIdx]?.[q] || false),
+        Array.from(
+          { length: 4 },
+          (_, q) => selected[h - TIME_TABLE_START_HOUR]?.[dayIdx]?.[q] || false,
+        ),
       );
 
       const ranges = extractTimeRanges(dayArr);

@@ -11,7 +11,7 @@ import {
 } from '@/hooks/stores/promise/usePromiseDataStore';
 import useJoinPromise from '@/hooks/mutations/useJoinPromise';
 import { usePromiseDataFromServerInfo } from '@/hooks/stores/promise/usePromiseDataFromServerStore';
-import { PROMISE_CREATE_HEADER_TEXT } from '@/constants/promise';
+import { PROMISE_CREATE_HEADER_TEXT, TIME_TABLE_START_HOUR } from '@/constants/promise';
 import { BUILD_ROUTES } from '@/constants/routes';
 
 const JoinSchedulePage = () => {
@@ -59,9 +59,9 @@ const JoinSchedulePage = () => {
 
   // handleTimeTableChange에서 사용할 min/max 계산
   const { minHour, maxHour } = useMemo(() => {
-    // 생성자가 제안한 시간이 없으면 기본 24시간 (하지만 참여 페이지라면 보통 존재함)
+    // 생성자가 제안한 시간이 없으면 기본 범위 (AbleTimeTable과 동일해야 행 번호가 맞음)
     if (!baseAvailableTimes.some((d) => d.timeRanges?.length > 0)) {
-      return { minHour: 0, maxHour: 24 };
+      return { minHour: TIME_TABLE_START_HOUR, maxHour: 24 };
     }
 
     let min = 24;

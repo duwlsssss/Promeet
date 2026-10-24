@@ -5,6 +5,9 @@ export const PROMISE_LOCATION_HEADER_TEXT = '주소 검색';
 
 export const DEFAULT_SUBWAY_STATION = '숭실대입구역';
 
+// 시간표 기본 시작 시각 (새벽 시간대 약속은 없다고 보고 9시부터 표시)
+export const TIME_TABLE_START_HOUR = 9;
+
 // 유효성 검사
 export const NAME_MAX_LENGTH = 20;
 export const DESCRIPTION_MAX_LENGTH = 20;

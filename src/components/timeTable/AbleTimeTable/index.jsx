@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import * as S from './style';
 import TimeIcon from '../../../assets/img/icon/time.svg';
 import { DAYS } from '@/constants/calender';
+import { TIME_TABLE_START_HOUR } from '@/constants/promise';
 
 // 시간 인덱스를 "HH:MM" 문자열로 변환
 function getTimeFromIndex(hourIdx, quarterIdx) {
@@ -13,9 +14,9 @@ function getTimeFromIndex(hourIdx, quarterIdx) {
 
 const AbleTimeTable = ({ days, onChange, isFullTime = false }) => {
   const { minHour, maxHour } = useMemo(() => {
-    // 생성 페이지(isFullTime)이거나 데이터가 없으면 무조건 0~24
+    // 생성 페이지(isFullTime)이거나 데이터가 없으면 기본 범위(시작 시각~24시)
     if (isFullTime || !days.some((d) => d.timeRanges?.length > 0)) {
-      return { minHour: 0, maxHour: 24 };
+      return { minHour: TIME_TABLE_START_HOUR, maxHour: 24 };
     }
 
     let min = 24,
