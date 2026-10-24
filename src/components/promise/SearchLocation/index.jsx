@@ -78,7 +78,8 @@ const SearchLocation = ({ onBack }) => {
         placeId: place.id,
         name: place.place_name,
         address: place.road_address_name ?? place.address_name,
-        position: new window.kakao.maps.LatLng(place.y, place.x),
+        // LatLng 객체의 내부 필드명(Ma/La)은 SDK 버전마다 바뀌므로 일반 객체로 저장
+        position: { Ma: Number(place.y), La: Number(place.x) },
       }));
       setPlaces(places);
     } else if (status === window.kakao.maps.services.Status.ZERO_RESULT) {

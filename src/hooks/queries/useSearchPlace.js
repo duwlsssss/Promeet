@@ -94,7 +94,8 @@ const useSearchPlace = (category) => {
           phone: place.phone,
           address: place.road_address_name ?? place.address_name,
           link: place.place_url,
-          position: new window.kakao.maps.LatLng(place.y, place.x),
+          // LatLng 객체의 내부 필드명(Ma/La)은 SDK 버전마다 바뀌므로 일반 객체로 저장
+          position: { Ma: Number(place.y), La: Number(place.x) },
         }));
 
         setNearbyPlaces(places);
@@ -137,7 +138,7 @@ const useSearchPlace = (category) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, stableCenterStation, ps, handleSearchResults]);
 
-  // 좋아요 장소를 카카오 맵 형식으로 변환 (좋아요 추가/제거 시에만 바뀜)
+  // 좋아요 장소를 장소 카드 형식으로 변환 (좋아요 추가/제거 시에만 바뀜)
   const likedPlacesList = useMemo(() => {
     return likedPlaces.map((likedPlace) => ({
       placeId: likedPlace.place.placeId,
@@ -146,10 +147,10 @@ const useSearchPlace = (category) => {
       address: likedPlace.place.address,
       phone: likedPlace.place.phone,
       link: likedPlace.place.link,
-      position: new window.kakao.maps.LatLng(
-        likedPlace.place.position.Ma,
-        likedPlace.place.position.La,
-      ),
+      position: {
+        Ma: Number(likedPlace.place.position.Ma),
+        La: Number(likedPlace.place.position.La),
+      },
     }));
   }, [likedPlaces]);
 
