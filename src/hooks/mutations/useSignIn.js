@@ -37,13 +37,17 @@ const useSignIn = (setError) => {
       }
     },
     onError: (error) => {
-      if (error.response.data.error.code !== 'INVALID_PASSWORD') {
+      if (error.response?.data?.error?.code !== 'INVALID_PASSWORD') {
         // 다른 에러는 일반적인 에러 처리
         handleError(error);
+        return;
       }
 
-      // 비밀번호 에러는 폼에만 표시
-      setError('password', { message: error.response.data.error.message });
+      // 이름이 곧 계정이라, 비밀번호 불일치는 "동명이인이 이미 사용 중"일 수도 있음을 함께 안내
+      setError('password', {
+        message:
+          '이미 사용 중인 이름이에요. 본인이면 비밀번호를 확인하고, 처음이면 다른 이름을 써주세요.',
+      });
     },
   });
 };
