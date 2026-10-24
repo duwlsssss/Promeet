@@ -40,6 +40,8 @@ const classifyPromises = (Promises) => {
 const HomePage = () => {
   const [cardIdx, setCardIdx] = useState(0);
   const startX = useRef(null);
+  // 스와이프 직후 발생하는 click으로 페이지가 이동하지 않도록 구분
+  const isSwipedRef = useRef(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -75,6 +77,7 @@ const HomePage = () => {
     if (startX.current === null) return;
     const endX = e.type === 'touchend' ? e.changedTouches[0].clientX : e.clientX;
     const diff = endX - startX.current;
+    isSwipedRef.current = Math.abs(diff) > 10;
 
     if (diff < -50) {
       // 왼쪽으로 넘기면 다음 카드
@@ -100,6 +103,16 @@ const HomePage = () => {
     } else {
       navigate(BUILD_ROUTES.PROMISE_RESULT(promise.promiseId));
     }
+  };
+
+  // 가운데(활성) 카드는 요약 페이지로, 옆에 보이는 카드는 해당 카드로 이동
+  const handleTodayCardClick = (promise, idx) => {
+    if (isSwipedRef.current) return;
+    if (idx !== cardIdx) {
+      setCardIdx(idx);
+      return;
+    }
+    handleAppointmentClick(promise);
   };
 
   const renderAppointmentList = (list, badge, emptyText) => {
@@ -180,6 +193,7 @@ const HomePage = () => {
                       key={card.promiseId}
                       style={{ opacity: cardIdx === i ? 1 : 0.6 }}
                       $active={cardIdx === i}
+                      onClick={() => handleTodayCardClick(card, i)}
                     >
                       <Card
                         title={card.title}

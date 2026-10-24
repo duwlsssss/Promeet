@@ -107,6 +107,8 @@ export const TodayCardScroller = styled.div`
 `;
 
 export const TodayCard = styled.div`
+  cursor: pointer;
+
   position: relative;
 
   width: 300px;

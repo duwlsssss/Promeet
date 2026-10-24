@@ -80,6 +80,8 @@ export const CardList = styled.div`
 
 // 카드 하나를 감싸는 래퍼
 export const CardWrapper = styled.div`
+  /* 클릭 가능한 카드에만 pointer (빈 목록 안내 문구에도 같은 래퍼를 사용) */
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
   display: flex;
   flex-direction: column;
   align-items: center;

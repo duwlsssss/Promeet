@@ -120,9 +120,16 @@ const UserPage = () => {
                 <div style={{ color: '#aaa', fontSize: 14 }}>다가오는 약속이 없습니다.</div>
               </S.CardWrapper>
             ) : (
-              upcomingAppointments.map((item, index) => (
-                <S.CardWrapper key={index}>
-                  <AppointmentCard {...item} />
+              upcomingAppointments.map((item) => (
+                <S.CardWrapper
+                  key={item.promiseId}
+                  onClick={() =>
+                    navigate(BUILD_ROUTES.PROMISE_SUMMARY(item.promiseId), {
+                      state: { backUrl: ROUTES.USER },
+                    })
+                  }
+                >
+                  <AppointmentCard dday={item.dday} label={item.label} />
                 </S.CardWrapper>
               ))
             )}
