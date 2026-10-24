@@ -10,6 +10,18 @@
 
 - 배포: https://promeet-gilt.vercel.app
 - 백엔드 저장소: https://github.com/duwlsssss/Promeet-Server
+- 데모 계정: 이름 `김도담` / 비밀번호 `1234`
+
+&nbsp;
+
+## ✨ 주요 기능
+
+- **약속 생성 / 공유**: 약속 정보·후보 날짜·출발 위치·가능 시간을 입력하면 참여 링크 생성
+- **가능 시간 입력**: 15분 단위 드래그 시간표 (09:00 ~ 24:00), 참여자는 생성자가 제안한 범위 안에서 선택
+- **중간 지점 추천**: 모든 멤버의 출발역에서 지하철 이동 시간 합이 가장 적은 역을 계산하고, 멤버별 경로와 소요 시간을 지도에 표시
+- **장소 탐색 / 좋아요**: 중간역 주변 장소를 카테고리별로 검색하고, 좋아요한 멤버 이름 표시
+- **약속 확정**: 모든 멤버가 좋아요를 누르고 공통 가능 시간이 있으면 생성자가 최종 장소를 확정
+- **내 약속 관리**: 다가오는 / 미확정 / 지난 약속 목록, 고정 일정 등록
 
 &nbsp;
 
@@ -27,7 +39,8 @@
 |   Formatting    |                                                                                                                                                                             ![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white) ![Prettier](https://img.shields.io/badge/prettier-1A2C34?style=for-the-badge&logo=prettier&logoColor=F7BA3E)                                                                                                                                                                             |
 | Package Manager |                                                                                                                                                                                                                                        ![Npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)                                                                                                                                                                                                                                        |
 | Version Control |                                                                                                                                                                              ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)                                                                                                                                                                              |
-|   Deployment    |                                                                                                                                                                                                                                   ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=Vercel&logoColor=white)                                                                                                                                                                                                                                    |
+|     Backend     |                                                                                                                                                                             ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)                                                                                                                                                                              |
+|   Deployment    |                                                                                                               ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=Vercel&logoColor=white) ![AWS EC2](https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)                                                                                                                |
 |  Collaboration  |                                                                                                                                                                                                                                   ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)                                                                                                                                                                                                                                    |
 
 </div>
@@ -100,6 +113,55 @@ src
 ├── types         # PropTypes 정의, 타입 선언(d.ts)
 └── utils         # 유틸 함수
 ```
+
+&nbsp;
+
+## 🏗 아키텍처
+
+```
+[Browser] ── Vercel (React SPA, vercel.json rewrites)
+    │ axios
+    ▼
+Nginx (blue/green) ── Express (Docker, EC2) ── MongoDB Atlas
+    ▲
+GitHub Actions: push → 이미지 빌드 → ECR → SSM으로 EC2 배포
+```
+
+&nbsp;
+
+## 🧩 기술적 구현 포인트
+
+- **서버 상태 / 클라이언트 상태 분리**: 서버 데이터는 TanStack Query, 약속 작성 중 입력값과 UI 상태는 Zustand로 관리
+- **좋아요 낙관적 업데이트**: `onMutate`에서 즉시 반영하고 실패 시 이전 상태로 롤백, 완료 후 서버 데이터 재검증
+- **리렌더링 최소화**: Zustand 셀렉터와 `useShallow`로 필요한 값만 구독하고, 좋아요 버튼과 좋아요 멤버를 별도 컴포넌트로 분리해 장소 카드 전체가 다시 그려지지 않도록 함
+- **페이지 접근 제어**: 로그인·생성자·참여자·멤버 여부에 따라 라우트를 감싸는 래퍼 컴포넌트 (`routes/PageWrappers.jsx`)
+- **폼 검증**: react-hook-form + zod 스키마
+- **에러 처리**: react-error-boundary로 렌더링 에러를 격리하고, API 에러는 공통 핸들러에서 처리
+- **카카오맵**: SDK 동적 로드, 카테고리별 마커와 커스텀 오버레이로 멤버 경로·소요 시간 표시, framer-motion 드래그 바텀시트
+- **중간역 계산 (백엔드)**: 지하철 노선 그래프에 다익스트라를 적용해 모든 멤버의 이동 시간 합이 최소인 역 선택, 환승 시 5분 가산
+- **공통 가능 시간 (백엔드)**: 같은 날짜의 시간 구간끼리 `max(시작) ~ min(종료)`로 교집합을 계산해 일부만 겹치는 시간도 인식
+
+&nbsp;
+
+## 🔥 트러블슈팅
+
+### 배포 환경에서 새로고침 시 404 → MIME type 오류
+
+- **문제**: `/promise/:id/finalize` 등에서 새로고침하면 Vercel 404, rewrites 추가 후에는 `Failed to load module script ... MIME type of "text/html"` 발생
+- **원인**: SPA라 서버에 해당 경로의 파일이 없음. 또 Vite `base: './'`로 스크립트가 상대 경로라 중첩 경로에서 `/promise/:id/assets/...`를 요청했고, rewrites가 이를 `index.html`로 응답
+- **해결**: `vercel.json`에 모든 경로를 `index.html`로 보내는 rewrites 추가, `base`를 `'/'`로 변경
+
+### 카카오맵 SDK 업데이트로 좌표가 사라짐
+
+- **문제**: 출발 위치를 선택해도 가까운 역이 입력되지 않고, 장소 마커와 지도 이동이 동작하지 않음
+- **원인**: 버전을 고정하지 않은 SDK가 4.5.29로 업데이트되며 `LatLng` 객체의 난독화된 내부 필드(`Ma`, `La`) 이름이 바뀜
+- **해결**: SDK 객체 내부 필드를 읽지 않도록 좌표를 일반 객체 `{ Ma, La }`로 저장하고, 지도 API를 호출할 때만 `LatLng` 생성
+
+### 좋아요를 누를 때마다 목록 순서가 바뀜
+
+- **문제**: 좋아요 탭에서 좋아요를 누르면 응답 후 장소 순서가 섞임
+- **원인**: 백엔드에서 MongoDB `$group`으로 장소별 좋아요를 집계하는데, `$group`은 결과 순서를 보장하지 않음
+- **해결**: 장소별 첫 좋아요 시각 순으로 `$sort`해 프론트 낙관적 업데이트와 같은 순서로 고정
 
 &nbsp;
 
