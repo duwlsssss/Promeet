@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import matchIcon from '@/utils/matchIcon.jsx';
 import usePlaceCardHandlers from './hooks/usePlaceCardHandlers';
 import LikeButton from './LikeButton';
+import LikedMembers from './LikedMembers';
 import { CATEGORY } from '@/constants/place';
 
 const PlaceCard = ({
@@ -50,6 +51,7 @@ const PlaceCard = ({
                 정보 보기
               </S.PlaceLink>
             ) : null}
+            {showHeart ? <LikedMembers placeId={placeId} /> : null}
           </S.CardInfoWrapper>
           {isCreator ? (
             <S.FixPlaceBtn

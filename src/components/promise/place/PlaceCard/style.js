@@ -58,6 +58,13 @@ export const PlaceInfoText = styled.p`
   ${ellipseStyle}
 `;
 
+export const LikedMembersText = styled.p`
+  max-width: 170px;
+  font-size: 12px;
+  color: ${theme.color.main};
+  ${ellipseStyle}
+`;
+
 export const PlaceLink = styled.a`
   cursor: pointer;
   font-size: 12px;
