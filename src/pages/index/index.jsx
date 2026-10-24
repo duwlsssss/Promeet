@@ -91,9 +91,38 @@ const HomePage = () => {
     else navigate(ROUTES.PROMISE_CREATE_INFO);
   };
 
-  const handleAppointmentClick = (promiseId) => {
-    console.log(promiseId);
-    navigate(BUILD_ROUTES.PROMISE_SUMMARY(promiseId));
+  // 확정 전: 생성자는 확정 페이지, 참여자는 결과 페이지(마이페이지와 동일) / 확정 후: 요약 페이지
+  const handleAppointmentClick = (promise) => {
+    if (promise.isFixed) {
+      navigate(BUILD_ROUTES.PROMISE_SUMMARY(promise.promiseId));
+    } else if (promise.creatorId === userId) {
+      navigate(BUILD_ROUTES.PROMISE_FINALIZE(promise.promiseId));
+    } else {
+      navigate(BUILD_ROUTES.PROMISE_RESULT(promise.promiseId));
+    }
+  };
+
+  const renderAppointmentList = (list, badge, emptyText) => {
+    if (list.length === 0) {
+      return (
+        <S.EmptyPromiseBox>
+          <S.EmptyPromiseText>{emptyText}</S.EmptyPromiseText>
+        </S.EmptyPromiseBox>
+      );
+    }
+    return list.map((promise) => {
+      const date = promise.isFixed ? promise.fixedTime?.[0]?.date : '';
+      return (
+        <S.Appointment key={promise.promiseId} onClick={() => handleAppointmentClick(promise)}>
+          <div>
+            <small>{badge}</small>
+            <h4>{promise.title}</h4>
+            <span>{date}</span>
+          </div>
+          <AppointmentCard dday={promise.isFixed ? getDday(date) : '미확정'} label="" size={40} />
+        </S.Appointment>
+      );
+    });
   };
 
   if (!userId)
@@ -171,100 +200,18 @@ const HomePage = () => {
 
             {/* 내가 생성한 약속 리스트 */}
             <S.SectionTitle2>내가 생성한 약속</S.SectionTitle2>
-            {createdPromises.filter((promise) => {
-              const firstTime = promise.fixedTime?.[0];
-              if (!firstTime) return false;
-              const dday = dayjs(firstTime.date).diff(dayjs().format('YYYY-MM-DD'), 'day');
-              return dday >= 0;
-            }).length === 0 ? (
-              <S.EmptyPromiseBox>
-                <S.EmptyPromiseText>아직 생성한 약속이 없어요!</S.EmptyPromiseText>
-              </S.EmptyPromiseBox>
-            ) : (
-              createdPromises
-                .filter((promise) => {
-                  const firstTime = promise.fixedTime?.[0];
-                  if (!firstTime) return false;
-                  const dday = dayjs(firstTime.date).diff(dayjs().format('YYYY-MM-DD'), 'day');
-                  return dday >= 0;
-                })
-                .sort((a, b) => {
-                  const ddayA = dayjs(a.fixedTime?.[0]?.date).diff(
-                    dayjs().format('YYYY-MM-DD'),
-                    'day',
-                  );
-                  const ddayB = dayjs(b.fixedTime?.[0]?.date).diff(
-                    dayjs().format('YYYY-MM-DD'),
-                    'day',
-                  );
-                  return ddayA - ddayB;
-                })
-                .map((promise) => (
-                  <S.Appointment
-                    key={promise.promiseId}
-                    onClick={() => handleAppointmentClick(promise.promiseId)}
-                  >
-                    <div>
-                      <small>내가 생성함</small>
-                      <h4>{promise.title}</h4>
-                      <span>{promise.fixedTime?.[0]?.date}</span>
-                    </div>
-                    <AppointmentCard
-                      dday={getDday(promise.fixedTime?.[0]?.date)}
-                      label=""
-                      size={40}
-                    />
-                  </S.Appointment>
-                ))
+            {renderAppointmentList(
+              getUpcomingList(createdPromises),
+              '내가 생성함',
+              '아직 생성한 약속이 없어요!',
             )}
 
             {/* 초대받은 약속 리스트 */}
             <S.SectionTitle2>초대받은 약속</S.SectionTitle2>
-            {joinedPromises.filter((promise) => {
-              const firstTime = promise.fixedTime?.[0];
-              if (!firstTime) return false;
-              const dday = dayjs(firstTime.date).diff(dayjs().format('YYYY-MM-DD'), 'day');
-              return dday >= 0;
-            }).length === 0 ? (
-              <S.EmptyPromiseBox>
-                <S.EmptyPromiseText>아직 초대 받은 약속이 없어요!</S.EmptyPromiseText>
-              </S.EmptyPromiseBox>
-            ) : (
-              joinedPromises
-                .filter((promise) => {
-                  const firstTime = promise.fixedTime?.[0];
-                  if (!firstTime) return false;
-                  const dday = dayjs(firstTime.date).diff(dayjs().format('YYYY-MM-DD'), 'day');
-                  return dday >= 0;
-                })
-                .sort((a, b) => {
-                  const ddayA = dayjs(a.fixedTime?.[0]?.date).diff(
-                    dayjs().format('YYYY-MM-DD'),
-                    'day',
-                  );
-                  const ddayB = dayjs(b.fixedTime?.[0]?.date).diff(
-                    dayjs().format('YYYY-MM-DD'),
-                    'day',
-                  );
-                  return ddayA - ddayB;
-                })
-                .map((promise) => (
-                  <S.Appointment
-                    key={promise.promiseId}
-                    onClick={() => handleAppointmentClick(promise.promiseId)}
-                  >
-                    <div>
-                      <small>초대받음</small>
-                      <h4>{promise.title}</h4>
-                      <span>{promise.fixedTime?.[0]?.date}</span>
-                    </div>
-                    <AppointmentCard
-                      dday={getDday(promise.fixedTime?.[0]?.date)}
-                      label=""
-                      size={40}
-                    />
-                  </S.Appointment>
-                ))
+            {renderAppointmentList(
+              getUpcomingList(joinedPromises),
+              '초대받음',
+              '아직 초대 받은 약속이 없어요!',
             )}
           </S.Container>
           <Navbar />
@@ -276,6 +223,18 @@ const HomePage = () => {
 
 export default HomePage;
 
+// 다가오는 약속 목록: 확정된 약속 중 오늘 이후(가까운 순) + 미확정 약속
+// 미확정 약속의 fixedTime은 서버가 계산한 "공통 가능 시간 후보"라 날짜 기준으로 쓰지 않음
+function getUpcomingList(promises) {
+  const today = dayjs().startOf('day');
+  const fixed = promises
+    .filter((p) => p.isFixed && p.fixedTime?.[0])
+    .filter((p) => !dayjs(p.fixedTime[0].date).isBefore(today))
+    .sort((a, b) => dayjs(a.fixedTime[0].date).diff(dayjs(b.fixedTime[0].date)));
+  const unfixed = promises.filter((p) => !p.isFixed);
+  return [...fixed, ...unfixed];
+}
+
 // D-day 계산 함수
 function getDday(dateStr) {
   if (!dateStr) return '';
@@ -286,6 +245,3 @@ function getDday(dateStr) {
   if (diff > 0) return `D-${diff}`;
   return `D+${Math.abs(diff)}`;
 }
-
-// 69f15db129c9c0e87f9cfa4b
-// 69f314e2f63808ff82992b68

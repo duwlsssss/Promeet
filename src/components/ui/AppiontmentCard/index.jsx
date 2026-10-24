@@ -22,8 +22,10 @@ const AppointmentCard = ({ dday, label, left, top, size = 80, variant = 'circle'
 
   const isInviteOrProposal = dday === '초대됨' || dday === '제안함' || dday === '제안';
   const isPast = dday === '완료';
+  const isUnfixed = dday === '미확정';
   const centerText = dday === '초대됨' ? '수락' : dday;
-  const progress = isInviteOrProposal ? 0 : getProgress(dday, 10);
+  // 미확정은 D-day 숫자가 없어 진행률을 계산할 수 없으므로 빈 링으로 표시
+  const progress = isInviteOrProposal || isUnfixed ? 0 : getProgress(dday, 10);
 
   const style = {};
   if (left !== undefined) style.left = left;
@@ -32,7 +34,7 @@ const AppointmentCard = ({ dday, label, left, top, size = 80, variant = 'circle'
 
   const circleBg = isPast ? '#f2f3f5' : '#eaf1ff';
   const circleStroke = isPast ? '#b0b0b0' : isInviteOrProposal ? '#D1E2FE' : '#40b59f';
-  const textColor = isPast ? '#b0b0b0' : undefined;
+  const textColor = isPast ? '#b0b0b0' : isUnfixed ? '#888' : undefined;
   const labelColor = isPast ? '#b0b0b0' : undefined;
 
   return (
