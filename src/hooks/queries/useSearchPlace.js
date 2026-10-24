@@ -12,10 +12,14 @@ import useGetUserData from '@/hooks/queries/useGetUserData';
 import useFinalizePromise from '@/hooks/mutations/useFinalizePromise';
 import { BUILD_ROUTES } from '@/constants/routes';
 
-const getDescText = (userType, btnDisabled, isFinalizePending, canFix) => {
+const getDescText = (userType, btnDisabled, isFinalizePending, canFix, hasCommonTime) => {
+  // 확정 불가 사유: 공통 시간이 없으면 좋아요와 무관하게 확정할 수 없음
+  const cannotFixText = hasCommonTime
+    ? '모든 사용자가 좋아요를 눌러야 해요'
+    : '모두가 가능한 시간이 없어 확정할 수 없어요';
   const descTexts = {
     create: {
-      true: canFix ? '최종 약속 장소를 선택해주세요' : '모든 사용자가 좋아요를 눌러야 해요',
+      true: canFix ? '최종 약속 장소를 선택해주세요' : cannotFixText,
       false: isFinalizePending ? '약속 확정 중' : '약속 장소를 선택해주세요',
     },
     join: {
@@ -57,6 +61,7 @@ const useSearchPlace = (category) => {
     routes = [],
     isAllMembersSubmit,
     canFix,
+    fixedTime,
   } = promiseDataFromServer ?? {};
 
   const { isPending: isUserDataPending } = useGetUserData(userId);
@@ -186,7 +191,7 @@ const useSearchPlace = (category) => {
   }, [isAllMembersSubmit, routes]);
 
   return {
-    descText: getDescText(userType, btnDisabled, !!selectedPlace, isFinalizePending, canFix),
+    descText: getDescText(userType, btnDisabled, isFinalizePending, canFix, fixedTime?.length > 0),
     btnText: getBtnText(userType, selectedPlace),
     btnDisabled,
     places,
