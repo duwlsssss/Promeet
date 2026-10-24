@@ -63,7 +63,13 @@ const BottomSheet = ({ id, children }) => {
         dragControls={dragControls}
         dragListener={false}
       >
-        <S.BottomSheetHeader onPointerDown={(e) => dragControls.start(e)}>
+        <S.BottomSheetHeader
+          onPointerDown={(e) => {
+            // 마우스 드래그 시 브라우저 기본 텍스트 선택이 함께 시작되는 것 방지
+            e.preventDefault();
+            dragControls.start(e);
+          }}
+        >
           <S.lineIcon />
         </S.BottomSheetHeader>
         <S.BottomSheetContent>{children}</S.BottomSheetContent>

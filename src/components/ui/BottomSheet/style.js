@@ -21,6 +21,7 @@ export const BottomSheet = styled(motion.div)`
 
 export const BottomSheetHeader = styled.div`
   cursor: pointer;
+  user-select: none;
 
   display: flex;
   align-items: center;
