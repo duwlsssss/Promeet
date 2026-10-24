@@ -63,9 +63,10 @@ const UserPage = () => {
   };
 
   // 오늘 또는 미래 확정 약속만
+  // 미확정 약속의 fixedTime은 서버가 계산한 "공통 가능 시간 후보"이므로 확정된 약속만 포함
   const isUpcoming = (p) => {
     const firstTime = p.fixedTime?.[0];
-    if (!firstTime) return false;
+    if (!p.isFixed || !firstTime) return false;
     return dayjs(firstTime.date).diff(dayjs().startOf('day'), 'day') >= 0;
   };
 
@@ -77,17 +78,18 @@ const UserPage = () => {
   }));
 
   // 초대된 약속: 미확정 포함, 지난 약속 제외
+  // (미확정 약속의 fixedTime은 시간 후보라 D-day 대신 '미확정' 표시)
   const invitedAppointments = joinedPromises.filter(isActiveOrUnfixed).map((p) => ({
     promiseId: p.promiseId,
     label: p.title,
-    dday: p.fixedTime?.[0] ? getDday(p.fixedTime[0].date) : '미확정',
+    dday: p.isFixed && p.fixedTime?.[0] ? getDday(p.fixedTime[0].date) : '미확정',
   }));
 
   // 제안한 약속: 미확정 포함, 지난 약속 제외
   const proposedAppointments = createdPromises.filter(isActiveOrUnfixed).map((p) => ({
     promiseId: p.promiseId,
     label: p.title,
-    dday: p.fixedTime?.[0] ? getDday(p.fixedTime[0].date) : '미확정',
+    dday: p.isFixed && p.fixedTime?.[0] ? getDday(p.fixedTime[0].date) : '미확정',
   }));
 
   // 지난 약속
