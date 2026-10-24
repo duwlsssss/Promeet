@@ -142,7 +142,12 @@ const MarkerManager = ({ markers, routes }) => {
                       </div>
                       `
                     : `
-                        <div class="durationContainer">${firstStation.name}에서 ${totalDuration}분</div>
+                        <div class="durationContainer">${
+                          // 출발역이 곧 중간역이면 이동 구간이 없어 0분이 되므로 문구로 대체
+                          totalDuration === 0
+                            ? `${firstStation.name}에서 출발 · 이동 없음`
+                            : `${firstStation.name}에서 ${totalDuration}분`
+                        }</div>
                         <div class="bold">${userRoutes[0].name}</div>
                       `
                 }
