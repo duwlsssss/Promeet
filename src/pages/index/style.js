@@ -88,9 +88,11 @@ export const TodayCardWrapper = styled.div`
 
   overflow: hidden;
 
-  width: 100%;
+  /* 레이아웃 좌우 패딩까지 영역을 넓혀, 다음 카드가 패딩 경계에서 잘리지 않고 화면 끝까지 보이도록 */
+  width: calc(100% + 2 * var(--outlet-padding));
   height: 180px;
-  margin: 0.5px;
+  margin: 0 calc(-1 * var(--outlet-padding));
+  padding: 0 var(--outlet-padding);
 `;
 
 export const TodayCardScroller = styled.div`
