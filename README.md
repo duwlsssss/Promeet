@@ -1,4 +1,4 @@
-# 6조 [Promeet]()
+# 6조 [Promeet](https://promeet-gilt.vercel.app)
 
 ## 📂 프로젝트 소개
 
@@ -6,21 +6,29 @@
 
 &nbsp;
 
+## 🔗 링크
+
+- 배포: https://promeet-gilt.vercel.app
+- 백엔드 저장소: https://github.com/duwlsssss/Promeet-Server
+
+&nbsp;
+
 ## 🔧 기술 스택
 
 <div align="center">
 
-|      Type       |                                                                                                             Tool                                                                                                             |
-| :-------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|     Bundler     |                                                               ![VITE](https://img.shields.io/badge/VITE-646CFF?style=for-the-badge&logo=Vite&logoColor=white)                                                                |
-|     Library     |                                                        ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)                                                         |
-|    Language     | ![HTML5](https://img.shields.io/badge/HTML5-E34F26.svg?style=for-the-badge&logo=HTML5&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black) |
-|     Styling     |                                                               ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=CSS3&logoColor=white)                                                                |
-|   Formatting    |      ![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white) ![Prettier](https://img.shields.io/badge/prettier-1A2C34?style=for-the-badge&logo=prettier&logoColor=F7BA3E)      |
-| Package Manager |                                                                 ![Npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)                                                                 |
-| Version Control |       ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)       |
-|   Deployment    |                                                            ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=Vercel&logoColor=white)                                                             |
-|  Collaboration  |                                                            ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)                                                             |
+|      Type       |                                                                                                                                                                                                                                                                                    Tool                                                                                                                                                                                                                                                                                    |
+| :-------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|     Bundler     |                                                                                                                                                                                                                                      ![VITE](https://img.shields.io/badge/VITE-646CFF?style=for-the-badge&logo=Vite&logoColor=white)                                                                                                                                                                                                                                       |
+|     Library     | ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white) ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=react-query&logoColor=white) ![Zustand](https://img.shields.io/badge/Zustand-443E38?style=for-the-badge&logo=react&logoColor=white) ![Axios](https://img.shields.io/badge/axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white) |
+|       Map       |                                                                                                                                                                                                                               ![Kakao Map](https://img.shields.io/badge/Kakao_Map_API-FFCD00?style=for-the-badge&logo=kakao&logoColor=black)                                                                                                                                                                                                                               |
+|    Language     |                                                                                                                                                                        ![HTML5](https://img.shields.io/badge/HTML5-E34F26.svg?style=for-the-badge&logo=HTML5&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black)                                                                                                                                                                        |
+|     Styling     |                                                                                                                                                                                                                  ![styled-components](https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white)                                                                                                                                                                                                                   |
+|   Formatting    |                                                                                                                                                                             ![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white) ![Prettier](https://img.shields.io/badge/prettier-1A2C34?style=for-the-badge&logo=prettier&logoColor=F7BA3E)                                                                                                                                                                             |
+| Package Manager |                                                                                                                                                                                                                                        ![Npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)                                                                                                                                                                                                                                        |
+| Version Control |                                                                                                                                                                              ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)                                                                                                                                                                              |
+|   Deployment    |                                                                                                                                                                                                                                   ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=Vercel&logoColor=white)                                                                                                                                                                                                                                    |
+|  Collaboration  |                                                                                                                                                                                                                                   ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)                                                                                                                                                                                                                                    |
 
 </div>
 
@@ -33,7 +41,7 @@
 먼저, Git 저장소에서 프로젝트를 로컬로 클론해야 합니다. 터미널(또는 명령 프롬프트)을 열고 아래 명령어를 입력합니다.
 
 ```bash
-git clone https://github.com/Global-Media-Web-Programming/Promeet.git
+git clone https://github.com/duwlsssss/Promeet.git
 ```
 
 해당 명령어는 지정된 Git 저장소에서 프로젝트를 로컬 컴퓨터로 복사해옵니다.
@@ -49,7 +57,18 @@ npm install
 
 이 명령어는 `package.json` 파일에 정의된 모든 의존성(dependencies)을 자동으로 설치해 줍니다.
 
-### 3. 개발 서버 실행
+### 3. 환경변수 설정
+
+프로젝트 루트에 `.env` 파일을 만들고 아래 값을 채웁니다.
+
+```bash
+VITE_SERVER_API_URL=백엔드 서버 주소
+VITE_KAKAO_JS_KEY=카카오 JavaScript 키
+```
+
+카카오 개발자 콘솔의 **JavaScript SDK 도메인**에 `http://localhost:5173`이 등록되어 있어야 지도가 로드됩니다.
+
+### 4. 개발 서버 실행
 
 모든 의존성이 설치되면, 개발 서버를 실행하여 프로젝트를 로컬에서 테스트할 수 있습니다.
 
@@ -65,7 +84,21 @@ npm run dev
 ## 📄 폴더 구조
 
 ```
-
+src
+├── apis          # axios 인스턴스, HTTP 메서드별 API 함수
+├── assets        # 이미지, 아이콘
+├── components    # 공통·도메인 컴포넌트 (auth, calendar, modal, promise, timeTable, ui)
+├── constants     # 라우트, 쿼리 키 등 상수
+├── hooks         # 커스텀 훅 (kakao, queries, mutations, stores)
+├── layouts       # 레이아웃, 네비게이션 바
+├── lib           # 라이브러리 설정 (tanstack-query)
+├── pages         # 라우트별 페이지
+├── routes        # 라우터, 페이지 접근 권한 래퍼
+├── schemas       # zod 폼 검증 스키마
+├── stores        # zustand 전역 상태
+├── styles        # 전역 스타일
+├── types         # PropTypes 정의, 타입 선언(d.ts)
+└── utils         # 유틸 함수
 ```
 
 &nbsp;
@@ -136,26 +169,3 @@ e.g. style: 홈페이지 스타일링
 - **develop**: 기능 개발이 완료된 코드가 머지되는 브랜치
 - **feat**: 기능 단위로 독립적인 개발 환경을 위하여 사용하고 merge 후 각 브랜치를 삭제 / issue 하나 당-branch 하나, PR 하나
   - feat 브랜치 이름 규칙: `feat/기능명-이슈번호` e.g. feat/admin-login-12
-
-&nbsp;
-
-## 🕓 프로젝트 진행 과정
-
-&nbsp;
-
-## 💁 구성원
-
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/AndyH0ng"><img src="https://avatars.githubusercontent.com/u/60703412?v=4" width="100px;" alt="AndyH0ng"/><br /><sub><b>🍀 홍준우</b></sub></a></td>
-    <td align="center"><a href="https://github.com/duwlsssss"><img src="https://avatars.githubusercontent.com/u/92291790?v=4" width="100px;" alt="duwlsssss"/><br /><sub><b>🍀 김여진</b></sub></a></td>
-    <td align="center"><a href="https://github.com/minji2424"><img src="https://avatars.githubusercontent.com/u/162069481?v=4" width="100px;" alt="minji2424"/><br /><sub><b>🍀 박민지</b></sub></a></td>
-    <td align="center"><a href="https://github.com/jangtaebin3"><img src="https://avatars.githubusercontent.com/u/162237964?v=4" width="100px;" alt="jangtaebin3"/><br /><sub><b>🍀 장태빈</b></sub></a></td>
-  </tr>
-  <tr>
-    <td align="center">역할: </td>
-    <td align="center">역할: </td>
-    <td align="center">역할: </td>
-    <td align="center">역할: </td>
-  </tr>
-</table>
