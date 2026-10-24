@@ -19,8 +19,15 @@ const PlaceCard = ({
   $isRetrieved,
 }) => {
   const place = { placeId, type, name, position, address, phone, link };
-  const { showHeart, isCreator, isSelected, isRetrieved, handleCardClick, handleClickFixPlaceBtn } =
-    usePlaceCardHandlers(place, $isRetrieved);
+  const {
+    showHeart,
+    isCreator,
+    isSelected,
+    isFixBtnDisabled,
+    isRetrieved,
+    handleCardClick,
+    handleClickFixPlaceBtn,
+  } = usePlaceCardHandlers(place, $isRetrieved);
 
   // 값이 같으면 같은 객체 참조 유지 → framer-motion이 불필요한 애니메이션 실행 안 함
   const animateConfig = useMemo(
@@ -55,6 +62,7 @@ const PlaceCard = ({
           </S.CardInfoWrapper>
           {isCreator ? (
             <S.FixPlaceBtn
+              disabled={isFixBtnDisabled}
               onClick={(e) => {
                 e.stopPropagation();
                 handleClickFixPlaceBtn();

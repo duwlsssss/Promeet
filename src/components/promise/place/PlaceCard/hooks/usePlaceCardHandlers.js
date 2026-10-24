@@ -8,6 +8,7 @@ import {
   usePromiseDataInfo,
   usePromiseDataActions,
 } from '@/hooks/stores/promise/usePromiseDataStore';
+import promiseDataFromServerStore from '@/stores/promise/promiseDataFromServerStore';
 import { ROUTES } from '@/constants/routes';
 
 export default function usePlaceCardHandlers(place, $isRetrieved) {
@@ -36,6 +37,11 @@ export default function usePlaceCardHandlers(place, $isRetrieved) {
 
   const isSelected = selectedPlace?.placeId === place.placeId;
 
+  // canFix만 구독해 다른 서버 데이터 변경 시 카드가 리렌더링되지 않게 함
+  const canFix = promiseDataFromServerStore((state) => !!state.promiseDataFromServer?.canFix);
+  // 확정 조건(모든 멤버 좋아요 등) 미충족 시 선택 불가, 이미 선택한 카드의 취소는 허용
+  const isFixBtnDisabled = !canFix && !isSelected;
+
   const handleCardClick = () => {
     setActiveBottomSheet(null);
     map.panTo(new window.kakao.maps.LatLng(place.position.Ma, place.position.La));
@@ -50,6 +56,7 @@ export default function usePlaceCardHandlers(place, $isRetrieved) {
     showHeart,
     isCreator,
     isSelected,
+    isFixBtnDisabled,
     isRetrieved,
     handleCardClick,
     handleClickFixPlaceBtn,

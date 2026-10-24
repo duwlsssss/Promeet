@@ -84,6 +84,11 @@ export const FixPlaceBtn = styled.button`
   color: ${theme.color.white};
 
   background-color: ${theme.color.main};
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: ${theme.color.disabled};
+  }
 `;
 
 export const CardRight = styled.div`
