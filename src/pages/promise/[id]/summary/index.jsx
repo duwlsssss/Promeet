@@ -10,9 +10,6 @@ import FinalPlaceMap from '@/components/promise/map/FinalPlaceMap';
 import { ROUTES } from '@/constants/routes';
 
 const SummaryPage = () => {
-  // queryClient.invalidateQueries({
-  //   queryKey: [QUERY_KEY.promise, '69f0a411d3b44862e4189949'],
-  // });
   const { promiseDataFromServer } = usePromiseDataFromServerInfo();
   const [isMapOpen, setIsMapOpen] = useState(false);
   // 확정 직후 진입 시 -1로 가면 확정 화면으로 돌아가므로, 진입한 곳에서 넘겨준 경로가 없으면 홈으로
